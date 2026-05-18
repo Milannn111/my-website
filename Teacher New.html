@@ -1,0 +1,855 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Console | Master Control Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #f0f4f8; font-family: Inter, system-ui, sans-serif; color: #1e293b; }
+        .glass-card { background: white; border-radius: 2rem; border: 1px solid #e2e8f0; box-shadow: 0 15px 35px -5px rgba(0,0,0,0.05); }
+        .stat-bar { height: 8px; border-radius: 10px; background: #f1f5f9; overflow: hidden; }
+        .progress-fill { height: 100%; transition: width 1s ease; }
+        .alert-pulse { border: 2px solid #6366f1; animation: alertShadow 2s infinite; }
+        @keyframes alertShadow { 0% { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); } 70% { box-shadow: 0 0 0 15px rgba(99,102,241,0); } 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .hidden-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; clip-path: inset(50%); }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto space-y-6">
+        <nav class="bg-slate-900 text-white rounded-[2.5rem] p-6 shadow-2xl flex justify-between items-center animate__animated animate__fadeInDown">
+            <div class="flex items-center gap-5">
+                <div class="bg-indigo-600 p-4 rounded-2xl"><i class="fas fa-crown text-2xl"></i></div>
+                <h1 class="text-2xl font-black uppercase tracking-tighter">EduPet <span class="text-indigo-400">Master</span></h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="syncStatus" class="hidden text-[10px] font-black text-indigo-300 uppercase tracking-widest">Syncing</span>
+                <button onclick="loadDashboard()" class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition"><i class="fas fa-sync-alt"></i></button>
+            </div>
+        </nav>
+
+        <section class="glass-card p-8 border-t-8 border-indigo-600 animate__animated animate__fadeInUp">
+            <h3 class="font-black text-lg uppercase mb-6 flex items-center gap-3"><i class="fas fa-scroll text-indigo-600"></i> Deploy Neural Directive</h3>
+            <div class="grid grid-cols-1 md:grid-cols-[1fr_170px_120px_auto] gap-4">
+                <input type="text" id="taskContent" placeholder="Enter objective (e.g., Complete Quiz 5)..." class="flex-grow bg-slate-50 border border-slate-200 rounded-2xl px-6 py-5 text-base focus:border-indigo-500 outline-none font-bold transition">
+                <select id="rewardType" class="bg-slate-50 border border-slate-200 rounded-2xl px-5 py-5 text-base focus:border-indigo-500 outline-none font-bold transition">
+                    <option value="cookie">Cookie</option>
+                    <option value="candy">Candy</option>
+                    <option value="apple">Apple</option>
+                </select>
+                <input type="number" id="rewardCount" min="1" max="99" value="1" class="bg-slate-50 border border-slate-200 rounded-2xl px-5 py-5 text-base focus:border-indigo-500 outline-none font-bold transition">
+                <button onclick="publishQuest()" class="bg-indigo-600 text-white px-10 py-5 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl">Broadcast</button>
+            </div>
+            <div class="mt-4">
+                <input type="file" id="taskFile" data-file-label="task-file" accept=".doc,.docx,.pdf,.jpg,.jpeg,application/pdf,image/jpeg,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden-file-input">
+                <div class="flex flex-wrap items-center gap-3">
+                    <label for="taskFile" class="bg-slate-900 text-white px-4 py-3 rounded-xl text-xs font-black uppercase cursor-pointer">Choose File</label>
+                    <span data-file-name="task-file" class="text-xs text-slate-500">No file selected</span>
+                </div>
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2">Optional Word, PDF, or JPG file. Max 1MB.</p>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-8">
+                <section class="glass-card p-8 h-full animate__animated animate__fadeInUp">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="font-black text-sm uppercase tracking-widest flex items-center gap-2"><i class="fas fa-clipboard-check text-indigo-500"></i> Published Tasks & Reviews</h3>
+                        <span id="pendingCount" class="bg-indigo-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full">0 PENDING</span>
+                    </div>
+                    <div id="submissionList" class="space-y-4 min-h-[400px]">
+                        <div class="text-center py-20 opacity-20 font-black text-xs uppercase tracking-[0.4em]">Awaiting Proof...</div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="lg:col-span-4 space-y-6">
+                <section class="glass-card p-8 animate__animated animate__fadeInRight">
+                    <h3 class="font-black text-xs uppercase tracking-widest text-slate-400 mb-8">Student Status</h3>
+                    <div id="analyticsGrid" class="space-y-6 max-h-[300px] overflow-y-auto no-scrollbar"></div>
+                </section>
+
+                <section class="glass-card p-8 animate__animated animate__fadeInRight">
+                    <h3 class="font-black text-xs uppercase tracking-widest text-pink-400 mb-6">Master Speech</h3>
+                    <textarea id="socialText" placeholder="Encourage everyone..." class="w-full h-24 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm italic outline-none mb-4"></textarea>
+                    <button onclick="postToSquare()" class="w-full bg-pink-600 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">Post to Square</button>
+                </section>
+            </div>
+        </div>
+
+        <section class="bg-[#05070a] text-white rounded-[2rem] border border-slate-800 p-8 animate__animated animate__fadeInUp">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+                <h3 class="font-black text-sm uppercase tracking-widest flex items-center gap-2"><i class="fas fa-comments text-pink-500"></i> Resonance Square</h3>
+                <button onclick="loadSquare()" class="bg-white/5 text-slate-300 border border-white/10 px-5 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-indigo-500/20 transition"><i class="fas fa-sync-alt mr-2"></i>Refresh</button>
+            </div>
+            <div id="squareFeed" class="space-y-5 max-h-[520px] overflow-y-auto no-scrollbar">
+                <div class="text-center py-16 opacity-20 font-black text-xs uppercase tracking-[0.3em]">Loading Square</div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://pwtlujuhxajddjoptaxv.supabase.co";
+        const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_qUotl0d8CiMz6VV3EvEHtA_2KfvY_Bu";
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+        const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+        const rewardIcon = { cookie: "Cookie", candy: "Candy", apple: "Apple" };
+        let dashboardRefreshTimer = null;
+        let dashboardRefreshInFlight = false;
+        const expandedTaskIds = new Set();
+        const toNumber = (value, fallback = 0) => {
+            const num = Number(value);
+            return Number.isFinite(num) ? num : fallback;
+        };
+
+        const nowIso = () => new Date().toISOString();
+        const requireOk = ({ error }) => {
+            if (error) throw error;
+        };
+        const FILE_BUCKET = "homework-files";
+        const MAX_FILE_SIZE = 1 * 1024 * 1024;
+        const allowedFileTypes = {
+            "application/pdf": true,
+            "image/jpeg": true,
+            "application/msword": true,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": true
+        };
+        const allowedFileExts = [".pdf", ".jpg", ".jpeg", ".doc", ".docx"];
+        const safeFileName = (name) => String(name || "file").replace(/[^a-z0-9._-]/gi, "_");
+        const fileLink = (file, label = "Open file") => file?.url ? `<a href="${escapeHtml(file.url)}" target="_blank" class="text-indigo-600 underline font-black">${escapeHtml(label)}</a>` : "";
+        const formatTime = (value) => value ? new Date(value).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
+
+        function validateHomeworkFile(file) {
+            if (!file) return;
+            const lower = file.name.toLowerCase();
+            const extOk = allowedFileExts.some(ext => lower.endsWith(ext));
+            if (!allowedFileTypes[file.type] && !extOk) throw new Error("Only Word, PDF, and JPG files are supported.");
+            if (file.size > MAX_FILE_SIZE) throw new Error("File size must be 1MB or less.");
+        }
+
+        async function uploadHomeworkFile(file, folder) {
+            if (!file) return null;
+            validateHomeworkFile(file);
+            const path = `${folder}/${Date.now()}_${safeFileName(file.name)}`;
+            const upload = await db.storage.from(FILE_BUCKET).upload(path, file, { upsert: true, contentType: file.type || undefined });
+            requireOk(upload);
+            const { data } = db.storage.from(FILE_BUCKET).getPublicUrl(path);
+            return { name: file.name, size: file.size, type: file.type, path, url: data.publicUrl };
+        }
+
+        const fromStudentRow = (row) => ({
+            username: row.username,
+            password: row.password || "",
+            petName: row.pet_name || "Core Link",
+            avatar: row.avatar || "",
+            stage: row.stage || "cat",
+            level: row.level,
+            xp: row.xp,
+            nextXp: row.next_xp,
+            cookie: row.cookie,
+            candy: row.candy,
+            apple: row.apple,
+            feedback: row.feedback || "",
+            logic_xp: row.logic_xp,
+            vital_xp: row.vital_xp,
+            total_focus: row.total_focus
+        });
+        const fromTaskRow = (row) => ({
+            id: row.id,
+            content: row.content || "",
+            taskContent: row.content || "",
+            rewardType: row.reward_type || "cookie",
+            reward: row.reward_type || "cookie",
+            rewardCount: Math.max(1, toNumber(row.reward_count, 1)),
+            status: row.status || "open",
+            createdAt: row.created_at,
+            attachment: row.attachment || null
+        });
+        const fromSubmissionRow = (row) => ({
+            studentName: row.student_name,
+            username: row.student_name,
+            taskId: row.task_id,
+            status: row.status || "pending",
+            rewardType: row.reward_type || "cookie",
+            reward: row.reward_type || "cookie",
+            rewardCount: Math.max(1, toNumber(row.reward_count, 1)),
+            submittedAt: row.submitted_at,
+            approvedAt: row.approved_at,
+            claimedAt: row.claimed_at,
+            attachment: row.attachment || null,
+            teacherFile: row.teacher_file || null,
+            teacherFeedback: row.teacher_feedback || "",
+            reviewedAt: row.reviewed_at,
+            teacherUnread: Boolean(row.teacher_unread),
+            studentUnread: Boolean(row.student_unread),
+            submissionUpdatedAt: row.submission_updated_at || row.submitted_at,
+            reviewUpdatedAt: row.review_updated_at || row.reviewed_at
+        });
+        const fromPostRow = (row) => ({
+            id: row.id,
+            username: row.username,
+            text: row.text,
+            env: row.env,
+            avatar: row.avatar,
+            timestamp: row.timestamp,
+            likes: Array.isArray(row.likes) ? row.likes : [],
+            comments: Array.isArray(row.comments) ? row.comments : []
+        });
+
+        async function getSubmission(username, taskId) {
+            const result = await db.from("submissions").select("*").eq("student_name", username).eq("task_id", String(taskId)).maybeSingle();
+            requireOk(result);
+            return result.data;
+        }
+
+        async function apiGet(action, params = {}) {
+            if (action === "getTeacherData") {
+                const studentsResult = await db.from("students").select("*").order("username", { ascending: true });
+                requireOk(studentsResult);
+                const tasksResult = await db.from("tasks").select("*").neq("status", "archived").order("created_at", { ascending: false });
+                requireOk(tasksResult);
+                const submissionsResult = await db.from("submissions").select("*").order("submitted_at", { ascending: false });
+                requireOk(submissionsResult);
+                const tasks = (tasksResult.data || []).map(fromTaskRow);
+                const submissions = (submissionsResult.data || []).map(fromSubmissionRow).map(sub => {
+                    const task = tasks.find(item => String(item.id) === String(sub.taskId)) || {};
+                    return {
+                        ...sub,
+                        id: sub.taskId,
+                        taskContent: task.content || "Unknown Task",
+                        content: task.content || "Unknown Task",
+                        rewardType: sub.rewardType || task.rewardType || "cookie",
+                        reward: sub.rewardType || task.rewardType || "cookie",
+                        rewardCount: Math.max(1, toNumber(sub.rewardCount || task.rewardCount, 1))
+                    };
+                });
+                const tasksWithSubmissions = tasks.map(task => ({
+                    ...task,
+                    submissions: submissions.filter(sub => String(sub.taskId) === String(task.id))
+                }));
+                return { students: (studentsResult.data || []).map(fromStudentRow), tasks: tasksWithSubmissions, submissions };
+            }
+            if (action === "getSquareData") {
+                const result = await db.from("square").select("*").order("timestamp", { ascending: false }).limit(50);
+                requireOk(result);
+                return { posts: (result.data || []).map(fromPostRow) };
+            }
+            return { error: "Unknown action" };
+        }
+
+        async function apiPost(payload) {
+            const action = payload.action;
+            if (action === "publishTask") {
+                requireOk(await db.from("tasks").upsert({
+                    id: String(payload.id || payload.taskId || Date.now()),
+                    content: payload.content || payload.taskContent || "",
+                    reward_type: payload.rewardType || payload.reward || "cookie",
+                    reward_count: Math.max(1, toNumber(payload.rewardCount ?? payload.rewardAmount, 1)),
+                    status: payload.status || "open",
+                    created_at: payload.createdAt || nowIso(),
+                    attachment: payload.attachment || null
+                }, { onConflict: "id" }));
+                return { status: "success" };
+            }
+            if (action === "approveTask") {
+                const sub = await getSubmission(payload.username, payload.taskId);
+                const rewardType = payload.rewardType || payload.reward || sub?.reward_type || "cookie";
+                const rewardCount = Math.max(1, toNumber(payload.rewardCount || sub?.reward_count, 1));
+                const currentStatus = String(sub?.status || "").toLowerCase();
+                requireOk(await db.from("submissions").upsert({
+                    student_name: payload.username,
+                    task_id: String(payload.taskId),
+                    status: currentStatus === "claimed" ? "claimed" : "approved",
+                    reward_type: rewardType,
+                    reward_count: rewardCount,
+                    submitted_at: sub?.submitted_at || nowIso(),
+                    approved_at: nowIso(),
+                    claimed_at: sub?.claimed_at || null,
+                    attachment: sub?.attachment || null,
+                    teacher_feedback: payload.teacherFeedback || sub?.teacher_feedback || "",
+                    teacher_file: payload.teacherFile || sub?.teacher_file || null,
+                    reviewed_at: nowIso(),
+                    teacher_unread: false,
+                    student_unread: true,
+                    submission_updated_at: sub?.submission_updated_at || sub?.submitted_at || null,
+                    review_updated_at: nowIso()
+                }, { onConflict: "student_name,task_id" }));
+                return { status: "success" };
+            }
+            if (action === "teacherPost" || action === "studentPost") {
+                requireOk(await db.from("square").insert({
+                    id: payload.id || payload.postId || String(Date.now()),
+                    username: payload.username,
+                    text: payload.text,
+                    env: payload.env || "Study",
+                    avatar: payload.avatar || "",
+                    timestamp: payload.timestamp || nowIso(),
+                    likes: payload.likes || [],
+                    comments: payload.comments || []
+                }));
+                return { status: "success" };
+            }
+            if (action === "deleteComment") {
+                const postResult = await db.from("square").select("comments").eq("id", String(payload.postId || payload.id)).maybeSingle();
+                requireOk(postResult);
+                const comments = Array.isArray(postResult.data?.comments) ? postResult.data.comments : [];
+                const commentId = String(payload.commentId || "");
+                const index = Number(payload.commentIndex);
+                const nextComments = commentId
+                    ? comments.filter(comment => String(comment.id || "") !== commentId)
+                    : comments.filter((comment, idx) => idx !== index);
+                requireOk(await db.from("square").update({ comments: nextComments }).eq("id", String(payload.postId || payload.id)));
+                return { status: "success" };
+            }
+            if (action === "commentPost") {
+                const postResult = await db.from("square").select("comments").eq("id", String(payload.postId || payload.id)).maybeSingle();
+                requireOk(postResult);
+                const comments = Array.isArray(postResult.data?.comments) ? postResult.data.comments : [];
+                comments.push({ id: payload.commentId || `Master_${Date.now()}`, username: payload.username || "Master", text: payload.text, avatar: payload.avatar || "Master", createdAt: payload.createdAt || nowIso() });
+                requireOk(await db.from("square").update({ comments }).eq("id", String(payload.postId || payload.id)));
+                return { status: "success" };
+            }
+            if (action === "likePost") {
+                const postResult = await db.from("square").select("likes").eq("id", String(payload.postId || payload.id)).maybeSingle();
+                requireOk(postResult);
+                const likes = Array.isArray(postResult.data?.likes) ? postResult.data.likes : [];
+                const index = likes.findIndex(name => String(name).trim().toLowerCase() === String(payload.username || "Master").trim().toLowerCase());
+                if (index >= 0) likes.splice(index, 1);
+                else likes.push(payload.username || "Master");
+                requireOk(await db.from("square").update({ likes }).eq("id", String(payload.postId || payload.id)));
+                return { status: "success" };
+            }
+            if (action === "deletePost") {
+                requireOk(await db.from("square").delete().eq("id", String(payload.postId || payload.id)));
+                return { status: "success" };
+            }
+            if (action === "deleteStudent") {
+                const username = String(payload.username || "").trim();
+                if (!username) throw new Error("Missing student username.");
+                requireOk(await db.from("submissions").delete().eq("student_name", username));
+                const postsResult = await db.from("square").select("*");
+                requireOk(postsResult);
+                for (const post of postsResult.data || []) {
+                    if (String(post.username || "").trim().toLowerCase() === username.toLowerCase()) {
+                        requireOk(await db.from("square").delete().eq("id", String(post.id)));
+                        continue;
+                    }
+                    const likes = Array.isArray(post.likes) ? post.likes.filter(name => String(name).trim().toLowerCase() !== username.toLowerCase()) : [];
+                    const comments = Array.isArray(post.comments) ? post.comments.filter(comment => String(comment.username || "").trim().toLowerCase() !== username.toLowerCase()) : [];
+                    if (likes.length !== (post.likes || []).length || comments.length !== (post.comments || []).length) {
+                        requireOk(await db.from("square").update({ likes, comments }).eq("id", String(post.id)));
+                    }
+                }
+                requireOk(await db.from("students").delete().eq("username", username));
+                return { status: "success" };
+            }
+            return { error: "Unknown action" };
+        }
+
+        function setSync(active) {
+            document.getElementById("syncStatus").classList.toggle("hidden", !active);
+        }
+
+        async function loadDashboard(options = {}) {
+            if (dashboardRefreshInFlight) return;
+            dashboardRefreshInFlight = true;
+            if (!options.silent) setSync(true);
+            try {
+                const data = await apiGet("getTeacherData");
+                const submissions = Array.isArray(data.submissions) ? data.submissions : [];
+                const tasks = Array.isArray(data.tasks) ? data.tasks : [];
+                const students = Array.isArray(data.students) ? data.students : [];
+                renderSubmissions(tasks);
+                renderAnalytics(students);
+                loadSquare({ silent: true });
+                document.getElementById("pendingCount").innerText = `${submissions.filter(item => item.status === "pending").length} PENDING`;
+            } catch (e) {
+                console.error(e);
+                if (!options.silent) {
+                    document.getElementById("submissionList").innerHTML = `<div class="text-center py-20 text-rose-500 font-black text-xs uppercase tracking-[0.2em]">Could not load Supabase data</div>`;
+                    document.getElementById("analyticsGrid").innerHTML = "";
+                }
+            } finally {
+                dashboardRefreshInFlight = false;
+                if (!options.silent) setSync(false);
+            }
+        }
+
+        function startDashboardAutoRefresh() {
+            clearInterval(dashboardRefreshTimer);
+            dashboardRefreshTimer = setInterval(() => {
+                if (isReviewEditing()) return;
+                if (!document.hidden) loadDashboard({ silent: true });
+            }, 5000);
+            window.addEventListener("beforeunload", () => clearInterval(dashboardRefreshTimer), { once: true });
+        }
+
+        function isReviewEditing() {
+            const list = document.getElementById("submissionList");
+            const active = document.activeElement;
+            if (active && list?.contains(active) && (active.tagName === "TEXTAREA" || active.tagName === "INPUT")) return true;
+            return [...document.querySelectorAll('#submissionList input[type="file"]')]
+                .some(el => el.files && el.files.length > 0);
+        }
+
+        function bindFilePickers(root = document) {
+            root.querySelectorAll('input[type="file"][data-file-label]').forEach(input => {
+                if (input.dataset.bound === "true") return;
+                input.dataset.bound = "true";
+                input.addEventListener("change", () => {
+                    const label = document.querySelector(`[data-file-name="${CSS.escape(input.dataset.fileLabel)}"]`);
+                    if (label) label.innerText = input.files?.[0]?.name || "No file selected";
+                });
+            });
+        }
+
+        function renderSubmissions(list) {
+            const container = document.getElementById("submissionList");
+            if (list.length === 0) {
+                container.innerHTML = `<div class="text-center py-20 opacity-20 font-black text-xs uppercase tracking-[0.4em]">No Submissions</div>`;
+                return;
+            }
+            container.innerHTML = list.map((item, index) => {
+                const studentName = item.username || item.studentName || item.name || "";
+                const rewardType = item.rewardType || item.reward || "cookie";
+                const rewardCount = Math.max(1, toNumber(item.rewardCount ?? item.rewardAmount, 1));
+                return `
+                <div class="submission-row flex items-center justify-between gap-4 p-6 bg-slate-50 border border-slate-100 rounded-3xl alert-pulse">
+                    <div class="flex items-center gap-4 min-w-0">
+                        <div class="text-3xl shrink-0">${escapeHtml(item.avatar || "Student")}</div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-black text-indigo-500 uppercase">${escapeHtml(studentName)}</p>
+                            <p class="text-sm font-bold break-words">Finished: "${escapeHtml(item.taskContent || item.content || "")}"</p>
+                            <p class="text-[10px] font-black text-emerald-600 uppercase mt-2">Reward: ${escapeHtml(rewardIcon[rewardType] || "Reward")} x ${rewardCount}</p>
+                        </div>
+                    </div>
+                    <button data-index="${index}" class="approve-btn bg-indigo-600 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase hover:bg-emerald-600 transition shadow-lg shrink-0">Approve for Claim</button>
+                </div>
+            `}).join("");
+            container.querySelectorAll(".approve-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const item = list[Number(btn.dataset.index)];
+                    approveIndividual(item, btn);
+                });
+            });
+        }
+
+        async function approveIndividual(item, btn) {
+            const user = item.username || item.studentName || item.name;
+            const taskId = item.taskId ?? item.id ?? item.taskID ?? item.TaskId;
+            if (!user || !taskId) return alert("Missing student or task id.");
+            const rewardType = item.rewardType || item.reward || "cookie";
+            const rewardCount = Math.max(1, toNumber(item.rewardCount ?? item.rewardAmount, 1));
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+            setSync(true);
+            try {
+                const row = btn.closest(".submission-row");
+                const feedbackInput = row?.querySelector("textarea");
+                const reviewFileInput = row?.querySelector('input[type="file"]');
+                const teacherFile = await uploadHomeworkFile(reviewFileInput?.files?.[0], `reviews/${user}/${taskId}`);
+                await apiPost({
+                    action: "approveTask",
+                    username: user,
+                    taskId,
+                    status: "approved",
+                    rewardType,
+                    reward: rewardType,
+                    rewardCount,
+                    rewardAmount: rewardCount,
+                    teacherFeedback: feedbackInput?.value.trim() || "",
+                    teacherFile
+                });
+                alert(`Review saved. ${user} can claim ${rewardIcon[rewardType] || "Reward"} x ${rewardCount}.`);
+                loadDashboard({ silent: true });
+            } catch (e) {
+                console.error(e);
+                alert(e.message || "Review could not be sent. Please try again.");
+                btn.disabled = false;
+                btn.innerText = "Approve & Send Review";
+            } finally {
+                setSync(false);
+            }
+        }
+
+        function renderSubmissions(tasks) {
+            const container = document.getElementById("submissionList");
+            if (!tasks.length) {
+                container.innerHTML = `<div class="text-center py-20 opacity-20 font-black text-xs uppercase tracking-[0.4em]">No Published Tasks</div>`;
+                return;
+            }
+            container.innerHTML = tasks.map(task => {
+                const submissions = task.submissions || [];
+                const pendingCount = submissions.filter(sub => sub.status === "pending").length;
+                const unreadCount = submissions.filter(sub => sub.teacherUnread).length;
+                const approvedCount = submissions.filter(sub => sub.status === "approved").length;
+                const claimedCount = submissions.filter(sub => sub.status === "claimed").length;
+                const isExpanded = expandedTaskIds.has(String(task.id));
+                return `
+                <div class="task-card bg-slate-50 border border-slate-100 rounded-3xl p-6 space-y-5" data-task-id="${escapeHtml(task.id)}">
+                    <button type="button" class="task-toggle w-full text-left flex justify-between gap-4 items-start" data-task-id="${escapeHtml(task.id)}">
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-black text-indigo-500 uppercase">Task</p>
+                            <p class="text-base font-black break-words">${escapeHtml(task.content)}</p>
+                            <p class="text-[10px] font-black text-amber-600 uppercase mt-2">Reward: ${escapeHtml(rewardIcon[task.rewardType] || "Reward")} x ${task.rewardCount}</p>
+                            ${task.attachment ? `<p class="text-[11px] mt-2 text-slate-500">Attached: ${escapeHtml(task.attachment.name || "File")}</p>` : ""}
+                        </div>
+                        <div class="shrink-0 text-right">
+                            <p class="text-[10px] font-black uppercase text-slate-500">${submissions.length} submissions</p>
+                            <p class="text-[9px] font-black uppercase text-slate-400 mt-1">${pendingCount} pending · ${approvedCount} approved · ${claimedCount} claimed</p>
+                            ${unreadCount ? `<p class="text-[9px] font-black uppercase text-pink-600 mt-1">${unreadCount} new upload</p>` : ""}
+                            <span class="inline-block mt-3 bg-white border border-slate-200 rounded-xl px-4 py-2 text-[10px] font-black uppercase text-slate-600">${isExpanded ? "Hide Records" : "View Records"}</span>
+                        </div>
+                    </button>
+                    <div class="task-details space-y-4 ${isExpanded ? "" : "hidden"}">
+                        ${task.attachment ? `<div class="bg-white border border-slate-100 rounded-2xl p-4 text-[11px]">Task file: ${fileLink(task.attachment, task.attachment.name || "Open")}</div>` : ""}
+                        ${submissions.length ? submissions.map(sub => renderSubmissionRow(task, sub)).join("") : `<div class="bg-white border border-slate-100 rounded-2xl p-5 text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">No submissions yet</div>`}
+                    </div>
+                </div>
+            `}).join("");
+            bindFilePickers(container);
+            container.querySelectorAll(".task-toggle").forEach(btn => {
+                btn.addEventListener("click", () => toggleTaskCard(btn));
+            });
+            container.querySelectorAll(".review-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    approveIndividual({
+                        username: btn.dataset.username,
+                        taskId: btn.dataset.taskId,
+                        rewardType: btn.dataset.rewardType,
+                        rewardCount: btn.dataset.rewardCount
+                    }, btn);
+                });
+            });
+        }
+
+        function toggleTaskCard(btn) {
+            const taskId = String(btn.dataset.taskId || "");
+            const card = btn.closest(".task-card");
+            const details = card?.querySelector(".task-details");
+            const label = btn.querySelector("span");
+            if (!taskId || !details) return;
+            const shouldOpen = details.classList.contains("hidden");
+            details.classList.toggle("hidden", !shouldOpen);
+            if (shouldOpen) expandedTaskIds.add(taskId);
+            else expandedTaskIds.delete(taskId);
+            if (label) label.innerText = shouldOpen ? "Hide Records" : "View Records";
+            if (shouldOpen) markTaskUploadsRead(taskId);
+        }
+
+        async function markTaskUploadsRead(taskId) {
+            try {
+                requireOk(await db.from("submissions").update({ teacher_unread: false }).eq("task_id", String(taskId)));
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderSubmissionRow(task, item) {
+            const studentName = item.username || item.studentName || item.name || "";
+            const rewardType = item.rewardType || item.reward || task.rewardType || "cookie";
+            const rewardCount = Math.max(1, toNumber(item.rewardCount ?? item.rewardAmount ?? task.rewardCount, 1));
+            const statusText = item.status === "claimed" ? "Claimed" : item.status === "approved" ? "Approved" : "Pending";
+            return `
+                <div class="submission-row bg-white border border-slate-100 rounded-2xl p-5 space-y-4 ${item.status === "pending" ? "alert-pulse" : ""}">
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-black text-indigo-500 uppercase">${escapeHtml(studentName)} - ${escapeHtml(statusText)}${item.teacherUnread ? ` · New upload` : ""}</p>
+                        <p class="text-[11px] text-slate-500 mt-1">Student file: ${item.attachment ? fileLink(item.attachment, item.attachment.name || "Open") : "No file uploaded"}${item.submissionUpdatedAt ? ` · ${escapeHtml(formatTime(item.submissionUpdatedAt))}` : ""}</p>
+                        <p class="text-[10px] font-black text-emerald-600 uppercase mt-2">Reward: ${escapeHtml(rewardIcon[rewardType] || "Reward")} x ${rewardCount}</p>
+                        ${item.teacherFeedback ? `<p class="text-xs italic text-slate-600 mt-3">Last note: "${escapeHtml(item.teacherFeedback)}"${item.reviewUpdatedAt ? ` · ${escapeHtml(formatTime(item.reviewUpdatedAt))}` : ""}</p>` : ""}
+                        ${item.teacherFile ? `<p class="text-[11px] mt-2">Teacher file: ${fileLink(item.teacherFile, item.teacherFile.name || "Open")}${item.reviewUpdatedAt ? ` · ${escapeHtml(formatTime(item.reviewUpdatedAt))}` : ""}</p>` : ""}
+                    </div>
+                    <textarea id="feedback-${escapeHtml(studentName)}-${escapeHtml(task.id)}" placeholder="Write feedback..." class="w-full min-h-20 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm outline-none focus:border-indigo-500">${escapeHtml(item.teacherFeedback || "")}</textarea>
+                    <div class="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <input type="file" id="review-file-${escapeHtml(studentName)}-${escapeHtml(task.id)}" data-file-label="review-${escapeHtml(studentName)}-${escapeHtml(task.id)}" accept=".doc,.docx,.pdf,.jpg,.jpeg,application/pdf,image/jpeg,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden-file-input">
+                            <label for="review-file-${escapeHtml(studentName)}-${escapeHtml(task.id)}" class="bg-slate-900 text-white px-3 py-2 rounded-lg text-[11px] font-black uppercase cursor-pointer">Choose File</label>
+                            <span data-file-name="review-${escapeHtml(studentName)}-${escapeHtml(task.id)}" class="text-[11px] text-slate-500">No file selected</span>
+                        </div>
+                        <button data-username="${escapeHtml(studentName)}" data-task-id="${escapeHtml(task.id)}" data-reward-type="${escapeHtml(rewardType)}" data-reward-count="${rewardCount}" class="review-btn bg-indigo-600 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase hover:bg-emerald-600 transition shadow-lg">${item.status === "pending" ? "Approve & Send Review" : "Update Review"}</button>
+                    </div>
+                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Optional teacher file, max 1MB</p>
+                </div>
+            `;
+        }
+
+        function renderAnalytics(students) {
+            const container = document.getElementById("analyticsGrid");
+            if (students.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 opacity-20 font-black text-xs uppercase tracking-[0.3em]">No Students</div>`;
+                return;
+            }
+            container.innerHTML = students.map(student => {
+                const xp = Math.max(0, toNumber(student.xp, 0));
+                const nextXp = Math.max(1, toNumber(student.nextXp, 100));
+                const percent = Math.min(100, Math.round((xp / nextXp) * 100));
+                return `
+                    <div class="space-y-2 bg-slate-50 border border-slate-100 rounded-2xl p-4">
+                        <div class="flex justify-between gap-3 text-[9px] font-black uppercase">
+                            <span class="break-all">${escapeHtml(student.username || "")}</span>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <span>Lv.${escapeHtml(student.level || 1)}</span>
+                                <button data-username="${escapeHtml(student.username || "")}" title="Delete student account" class="delete-student-btn w-7 h-7 rounded-full bg-white text-slate-300 border border-slate-200 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition">
+                                    <i class="fas fa-trash text-[9px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="stat-bar"><div class="progress-fill bg-indigo-500" style="width: ${percent}%"></div></div>
+                    </div>
+                `;
+            }).join("");
+            container.querySelectorAll(".delete-student-btn").forEach(btn => {
+                btn.addEventListener("click", () => deleteStudentAccount(btn.dataset.username));
+            });
+        }
+
+        async function deleteStudentAccount(username) {
+            if (!username) return;
+            if (!confirm(`Permanently delete ${username} and all related database records? This cannot be restored.`)) return;
+            setSync(true);
+            try {
+                await apiPost({ action: "deleteStudent", username });
+                alert(`${username} has been deleted.`);
+                await loadDashboard({ silent: true });
+            } catch (e) {
+                console.error(e);
+                alert(e.message || "Student account could not be deleted.");
+            } finally {
+                setSync(false);
+            }
+        }
+
+        async function publishQuest() {
+            const input = document.getElementById("taskContent");
+            const content = input.value.trim();
+            if (!content) return;
+            const id = Date.now().toString();
+            const rewardType = document.getElementById("rewardType").value;
+            const rewardCount = Math.max(1, toNumber(document.getElementById("rewardCount").value, 1));
+            setSync(true);
+            try {
+                const taskFileInput = document.getElementById("taskFile");
+                const attachment = await uploadHomeworkFile(taskFileInput?.files?.[0], `tasks/${id}`);
+                await apiPost({
+                    action: "publishTask",
+                    id,
+                    taskId: id,
+                    content,
+                    taskContent: content,
+                    status: "open",
+                    rewardType,
+                    reward: `${rewardType}:${rewardCount}`,
+                    rewardCount,
+                    rewardAmount: rewardCount,
+                    createdAt: new Date().toISOString(),
+                    attachment
+                });
+                input.value = "";
+                if (taskFileInput) taskFileInput.value = "";
+                alert("Quest broadcasted!");
+                loadDashboard({ silent: true });
+            } catch (e) {
+                console.error(e);
+                alert(e.message || "Quest could not be sent. Please try again.");
+            } finally {
+                setSync(false);
+            }
+        }
+
+        async function postToSquare() {
+            const input = document.getElementById("socialText");
+            const text = input.value.trim();
+            if (!text) return;
+            setSync(true);
+            try {
+                await apiPost({ action: "teacherPost", username: "Master", text, avatar: "Master" });
+                input.value = "";
+                await loadSquare({ silent: true });
+                alert("Sent!");
+            } catch (e) {
+                console.error(e);
+                alert("Message could not be sent. Please try again.");
+            } finally {
+                setSync(false);
+            }
+        }
+
+        function normalizeSquarePost(post) {
+            const parseList = value => {
+                if (Array.isArray(value)) return value;
+                try { return value ? JSON.parse(value) : []; } catch { return []; }
+            };
+            return {
+                id: String(post.id || post.postId || post.timestamp || Date.now()),
+                username: post.username || "Student",
+                text: post.text || post.message || "",
+                env: post.env || "Study",
+                avatar: post.avatar || "",
+                timestamp: post.timestamp || post.createdAt || post.created_at || "",
+                likes: parseList(post.likes),
+                comments: parseList(post.comments)
+            };
+        }
+
+        async function loadSquare(options = {}) {
+            const feed = document.getElementById("squareFeed");
+            if (!options.silent) setSync(true);
+            try {
+                const data = await apiGet("getSquareData");
+                const posts = (data.posts || []).map(normalizeSquarePost);
+                if (!posts.length) {
+                    feed.innerHTML = `<div class="bg-white/5 border border-white/10 rounded-2xl p-8 text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">No broadcasts yet</div>`;
+                    return;
+                }
+                feed.innerHTML = posts.map(post => `
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-8 flex gap-8 items-start">
+                        <div class="text-5xl py-2 shrink-0">${String(post.avatar || "").startsWith("http") ? `<img class="w-16 h-16 object-contain" src="${escapeHtml(post.avatar)}" alt="">` : `<span class="text-base font-black text-indigo-300">${escapeHtml(post.avatar || "Master")}</span>`}</div>
+                        <div class="flex-grow min-w-0">
+                            <div class="flex justify-between gap-3 mb-4">
+                                <span class="text-[11px] font-black text-indigo-400 uppercase">${escapeHtml(post.username)}</span>
+                                <span class="text-[9px] uppercase flex items-center gap-2">
+                                    ${post.timestamp ? `<span class="bg-indigo-500/25 border border-indigo-300/40 text-indigo-100 px-2 py-1 rounded-full font-black">${escapeHtml(formatTime(post.timestamp))}</span>` : ""}
+                                    <span class="text-slate-400">${escapeHtml(post.env || "")}</span>
+                                    <button data-post-id="${escapeHtml(post.id)}" title="Delete post" class="delete-post-btn w-7 h-7 rounded-full border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:bg-rose-500/30 transition"><i class="fas fa-trash text-[10px]"></i></button>
+                                </span>
+                            </div>
+                            <p class="text-xl text-slate-100 italic leading-relaxed mb-6">"${escapeHtml(post.text)}"</p>
+                            <div class="flex flex-wrap items-center gap-3 mb-5">
+                                <button data-post-id="${escapeHtml(post.id)}" class="like-post-btn ${post.likes.some(name => String(name).trim().toLowerCase() === "master") ? "bg-pink-500 text-white" : "bg-white/5 text-slate-300"} px-4 py-2 rounded-xl text-[10px] font-black uppercase border border-white/10 hover:bg-pink-500 hover:text-white transition">
+                                    <i class="fas fa-heart mr-2"></i><span>${post.likes.length}</span>
+                                </button>
+                                <span class="text-[10px] font-bold text-slate-400">${post.likes.length ? `Liked by ${escapeHtml(post.likes.join(", "))}` : "No likes yet"}</span>
+                            </div>
+                            <div class="space-y-3 mb-5">
+                            ${post.comments.length ? post.comments.map((comment, commentIndex) => {
+                                const timeText = comment.createdAt || comment.created_at || comment.timestamp;
+                                return `
+                                    <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex gap-3 items-start">
+                                        <div class="shrink-0">${String(comment.avatar || "").startsWith("http") ? `<img class="w-8 h-8 object-contain" src="${escapeHtml(comment.avatar)}" alt="">` : `<span class="text-2xl">${escapeHtml(comment.avatar || "Master")}</span>`}</div>
+                                        <div class="flex-grow min-w-0">
+                                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                                <div class="flex flex-wrap items-center gap-2">
+                                                    <span class="text-[10px] font-black text-indigo-300 uppercase">${escapeHtml(comment.username || "Student")}</span>
+                                                    ${timeText ? `<span class="bg-black/25 border border-white/10 rounded-full px-2 py-0.5 text-[9px] font-black text-white/80">${escapeHtml(formatTime(timeText))}</span>` : ""}
+                                                </div>
+                                                <button data-post-id="${escapeHtml(post.id)}" data-comment-id="${escapeHtml(comment.id || "")}" data-comment-index="${commentIndex}" title="Delete comment" class="delete-comment-btn w-7 h-7 rounded-full border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:bg-rose-500/30 transition"><i class="fas fa-trash text-[10px]"></i></button>
+                                            </div>
+                                            <p class="text-sm text-slate-200 mt-1 break-words">${escapeHtml(comment.text || "")}</p>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join("") : ""}
+                            </div>
+                            <div class="flex gap-3">
+                                <input data-comment-input="${escapeHtml(post.id)}" maxlength="100" placeholder="Add comment..." class="flex-grow bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-indigo-400 text-sm text-white">
+                                <button data-post-id="${escapeHtml(post.id)}" class="comment-post-btn bg-indigo-600 px-5 py-3 rounded-xl text-[10px] font-black uppercase">Comment</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join("");
+                bindSquareControls(feed);
+            } catch (e) {
+                console.error(e);
+                if (!options.silent) feed.innerHTML = `<div class="text-center py-16 text-rose-500 font-black text-xs uppercase tracking-[0.2em]">Could not load Square</div>`;
+            } finally {
+                if (!options.silent) setSync(false);
+            }
+        }
+
+        function bindSquareControls(root) {
+            root.querySelectorAll(".delete-comment-btn").forEach(btn => {
+                btn.addEventListener("click", () => deleteSquareComment(btn.dataset.postId, btn.dataset.commentId, Number(btn.dataset.commentIndex)));
+            });
+            root.querySelectorAll(".delete-post-btn").forEach(btn => {
+                btn.addEventListener("click", () => deleteSquarePost(btn.dataset.postId));
+            });
+            root.querySelectorAll(".like-post-btn").forEach(btn => {
+                btn.addEventListener("click", () => toggleSquareLike(btn.dataset.postId));
+            });
+            root.querySelectorAll(".comment-post-btn").forEach(btn => {
+                btn.addEventListener("click", () => submitSquareComment(btn.dataset.postId));
+            });
+        }
+
+        async function deleteSquareComment(postId, commentId, commentIndex) {
+            if (!confirm("Delete this comment?")) return;
+            setSync(true);
+            try {
+                await apiPost({ action: "deleteComment", postId, commentId, commentIndex });
+                await loadSquare({ silent: true });
+            } catch (e) {
+                console.error(e);
+                alert(e.message || "Comment could not be deleted.");
+            } finally {
+                setSync(false);
+            }
+        }
+
+        async function deleteSquarePost(postId) {
+            if (!confirm("Delete this post and all comments?")) return;
+            setSync(true);
+            try {
+                await apiPost({ action: "deletePost", postId });
+                await loadSquare({ silent: true });
+            } catch (e) {
+                console.error(e);
+                alert(e.message || "Post could not be deleted.");
+            } finally {
+                setSync(false);
+            }
+        }
+
+        async function toggleSquareLike(postId) {
+            setSync(true);
+            try {
+                await apiPost({ action: "likePost", postId, username: "Master" });
+                await loadSquare({ silent: true });
+            } catch (e) {
+                console.error(e);
+                alert(e.message || "Like could not be updated.");
+            } finally {
+                setSync(false);
+            }
+        }
+
+        async function submitSquareComment(postId) {
+            const input = document.querySelector(`[data-comment-input="${CSS.escape(postId)}"]`);
+            const text = input?.value.trim();
+            if (!text) return;
+            input.value = "";
+            setSync(true);
+            try {
+                await apiPost({
+                    action: "commentPost",
+                    postId,
+                    username: "Master",
+                    text,
+                    avatar: "Master",
+                    createdAt: nowIso(),
+                    commentId: `Master_${Date.now()}`
+                });
+                await loadSquare({ silent: true });
+            } catch (e) {
+                console.error(e);
+                alert(e.message || "Comment could not be sent.");
+            } finally {
+                setSync(false);
+            }
+        }
+
+        window.addEventListener("load", () => {
+            bindFilePickers(document);
+            loadDashboard();
+            loadSquare({ silent: true });
+            startDashboardAutoRefresh();
+        });
+    </script>
+</body>
+</html>
+
+
+
