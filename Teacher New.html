@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,136 +9,19 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --teacher-ink: #172033;
-            --teacher-muted: #64748b;
-            --teacher-panel: rgba(255, 255, 255, 0.86);
-            --teacher-border: rgba(99, 102, 241, 0.14);
-        }
-        body {
-            background-color: #f7fbff;
-            background-image:
-                radial-gradient(circle at 12% 8%, rgba(56, 189, 248, 0.30), transparent 28rem),
-                radial-gradient(circle at 86% 10%, rgba(236, 72, 153, 0.18), transparent 24rem),
-                radial-gradient(circle at 56% 94%, rgba(16, 185, 129, 0.16), transparent 28rem),
-                linear-gradient(135deg, #f9fbff 0%, #eef7ff 44%, #fff7ed 100%);
-            background-attachment: fixed;
-            background-size: cover;
-            font-family: Inter, system-ui, sans-serif;
-            color: var(--teacher-ink);
-            overflow-x: hidden;
-        }
-        .glass-card { background: var(--teacher-panel); border-radius: 1.5rem; border: 1px solid var(--teacher-border); box-shadow: 0 18px 50px rgba(79,70,229,0.12), inset 0 1px 0 rgba(255,255,255,0.82); backdrop-filter: blur(18px); }
+        body { background: #f0f4f8; font-family: Inter, system-ui, sans-serif; color: #1e293b; overflow-x: hidden; }
+        .glass-card { background: white; border-radius: 2rem; border: 1px solid #e2e8f0; box-shadow: 0 15px 35px -5px rgba(0,0,0,0.05); }
         .stat-bar { height: 8px; border-radius: 10px; background: #f1f5f9; overflow: hidden; }
         .progress-fill { height: 100%; transition: width 1s ease; }
         .alert-pulse { border: 2px solid #6366f1; animation: alertShadow 2s infinite; }
         @keyframes alertShadow { 0% { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); } 70% { box-shadow: 0 0 0 15px rgba(99,102,241,0); } 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); } }
+        section.animate__fadeInRight { animation: none !important; opacity: 1 !important; transform: none !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .hidden-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; clip-path: inset(50%); }
-        .hidden { display: none !important; }
-        .flex { display: flex; }
-        .grid { display: grid; }
-        .flex-col { flex-direction: column; }
-        .items-center { align-items: center; }
-        .items-start { align-items: flex-start; }
-        .justify-between { justify-content: space-between; }
-        .flex-wrap { flex-wrap: wrap; }
-        .relative { position: relative; }
-        .w-full { width: 100%; }
-        .h-full { height: 100%; }
-        .min-h-screen { min-height: 100vh; }
-        .min-w-0 { min-width: 0; }
-        .flex-grow { flex-grow: 1; }
-        .shrink-0 { flex-shrink: 0; }
-        .overflow-y-auto { overflow-y: auto; }
-        .text-center { text-align: center; }
-        .text-left { text-align: left; }
-        .text-right { text-align: right; }
-        .gap-2 { gap: 0.5rem; }
-        .gap-3 { gap: 0.75rem; }
-        .gap-4 { gap: 1rem; }
-        .gap-5 { gap: 1.25rem; }
-        .gap-6 { gap: 1.5rem; }
-        .gap-8 { gap: 2rem; }
-        .space-y-3 > * + * { margin-top: 0.75rem; }
-        .space-y-4 > * + * { margin-top: 1rem; }
-        .space-y-5 > * + * { margin-top: 1.25rem; }
-        .space-y-6 > * + * { margin-top: 1.5rem; }
-        .p-4 { padding: 1rem; }
-        .p-5 { padding: 1.25rem; }
-        .p-6 { padding: 1.5rem; }
-        .p-8 { padding: 2rem; }
-        .px-4 { padding-left: 1rem; padding-right: 1rem; }
-        .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
-        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
-        .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
-        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
-        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
-        .py-5 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
-        .mb-3 { margin-bottom: 0.75rem; }
-        .mb-4 { margin-bottom: 1rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .mb-8 { margin-bottom: 2rem; }
-        .mt-2 { margin-top: 0.5rem; }
-        .mt-3 { margin-top: 0.75rem; }
-        .mt-4 { margin-top: 1rem; }
-        .mt-5 { margin-top: 1.25rem; }
-        .mx-auto { margin-left: auto; margin-right: auto; }
-        body > .max-w-7xl { max-width: 80rem; margin-left: auto; margin-right: auto; }
-        body > div { display: block; }
-        body > div > * + * { margin-top: 1.5rem; }
-        body > div > nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.5rem; }
-        body > div > nav > div { display: flex; align-items: center; gap: 1rem; }
-        body > div > section:first-of-type .grid { display: grid; grid-template-columns: minmax(0, 1fr) 170px 120px auto; gap: 1rem; }
-        body > div > div.grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); gap: 1.5rem; }
-        body > div > div.grid > div { min-width: 0; }
-        .task-toggle, .submission-row > .flex, .teacher-square-card, .square-post-meta, .square-comment-row, .square-comment-form { display: flex; }
-        .task-toggle, .submission-row > .flex, .square-post-meta { justify-content: space-between; gap: 1rem; }
-        .square-comment-form { gap: 0.75rem; }
-        body > div > nav {
-            background: linear-gradient(135deg, rgba(99,102,241,0.96), rgba(56,189,248,0.90)) !important;
-            border: 1px solid rgba(255,255,255,0.42);
-            box-shadow: 0 24px 60px rgba(79,70,229,0.22);
-        }
-        body > div > nav .bg-indigo-600 { background: rgba(255,255,255,0.18) !important; border: 1px solid rgba(255,255,255,0.25); }
-        body > div > nav button { background: rgba(255,255,255,0.16) !important; border: 1px solid rgba(255,255,255,0.22); }
-        section:first-of-type { border-top-color: #38bdf8 !important; }
-        input, select, textarea {
-            background: rgba(255,255,255,0.82) !important;
-            border-color: rgba(99,102,241,0.16) !important;
-            color: var(--teacher-ink) !important;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
-        }
-        input:focus, select:focus, textarea:focus { border-color: #38bdf8 !important; box-shadow: 0 0 0 4px rgba(56,189,248,0.13); }
-        button.bg-indigo-600, button.bg-pink-600, button.bg-amber-500 {
-            background: linear-gradient(135deg, #6366f1, #38bdf8) !important;
-            color: #fff !important;
-            box-shadow: 0 14px 32px rgba(99,102,241,0.22);
-        }
-        #sendPrivateNoteBtn { background: linear-gradient(135deg, #f59e0b, #f472b6) !important; }
-        #pendingCount { background: linear-gradient(135deg, #6366f1, #38bdf8) !important; box-shadow: 0 10px 20px rgba(99,102,241,0.18); }
-        .task-card, .submission-row, #privateNotePreview article, #analyticsGrid > div {
-            background: rgba(255,255,255,0.82) !important;
-            border-color: rgba(99,102,241,0.12) !important;
-            box-shadow: 0 12px 28px rgba(15,23,42,0.06);
-        }
-        .stat-bar { background: rgba(99,102,241,0.10); }
-        #privateNotePanel { border-top: 6px solid rgba(245,158,11,0.84); }
-        body > div > section:last-child {
-            background: linear-gradient(135deg, rgba(31,41,55,0.96), rgba(49,46,129,0.94)) !important;
-            border-color: rgba(255,255,255,0.12) !important;
-            box-shadow: 0 20px 55px rgba(49,46,129,0.20);
-        }
-        .teacher-square-card { background: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.12) !important; }
-        .teacher-square-card input { background: rgba(255,255,255,0.08) !important; color: #fff !important; border-color: rgba(255,255,255,0.16) !important; }
         @media (max-width: 768px) {
             body { padding: 0.75rem; }
             .glass-card { border-radius: 1rem; }
             .max-w-7xl { max-width: 100%; }
-            body > div > section:first-of-type .grid,
-            body > div > div.grid { grid-template-columns: 1fr; }
-            .glass-card > .flex.justify-between { flex-direction: column; align-items: flex-start; }
-            #pendingCount { align-self: flex-start; }
             nav { flex-wrap: wrap; gap: 0.75rem; padding: 1rem !important; border-radius: 1rem !important; }
             nav h1 { font-size: 1rem !important; }
             nav .bg-indigo-600 { padding: 0.75rem; border-radius: 0.75rem; }
@@ -337,7 +220,6 @@
             petName: row.pet_name || "Core Link",
             avatar: row.avatar || "",
             stage: row.stage || "cat",
-            feedCount: Math.max(0, toNumber(row.feed_count, 0)),
             level: row.level,
             xp: row.xp,
             nextXp: row.next_xp,

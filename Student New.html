@@ -9,41 +9,19 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --glass: rgba(255, 255, 255, 0.78);
-            --panel-border: rgba(99, 102, 241, 0.14);
-            --ink: #172033;
-            --muted: #64748b;
-            --brand: #6366f1;
-            --sky: #38bdf8;
-            --sun: #f59e0b;
-            --berry: #ec4899;
-            --mint: #10b981;
-        }
+        :root { --glass: rgba(255, 255, 255, 0.08); }
         body {
             margin: 0; padding: 0; min-height: 100vh; font-family: Inter, system-ui, sans-serif;
-            background-color: #f7fbff;
-            background-image:
-                radial-gradient(circle at 12% 8%, rgba(56, 189, 248, 0.30), transparent 28rem),
-                radial-gradient(circle at 88% 14%, rgba(236, 72, 153, 0.20), transparent 24rem),
-                radial-gradient(circle at 58% 92%, rgba(16, 185, 129, 0.18), transparent 26rem),
-                linear-gradient(135deg, #f9fbff 0%, #eef7ff 42%, #fff7ed 100%);
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-size: cover; color: var(--ink); overflow: hidden; transition: background-image 1s ease, background-color 1s ease;
+            background: #05070a url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2560') no-repeat center center fixed;
+            background-size: cover; color: #fff; overflow: hidden; transition: background 1s ease;
         }
-        .glass { background: var(--glass); backdrop-filter: blur(22px); border: 1px solid var(--panel-border); border-radius: 1.25rem; box-shadow: 0 18px 50px rgba(79, 70, 229, 0.12), inset 0 1px 0 rgba(255,255,255,0.82); color: var(--ink); }
+        .glass { background: var(--glass); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        #app { background: linear-gradient(180deg, rgba(255,255,255,0.50), rgba(240,249,255,0.26)) !important; }
-        #app > nav { background: rgba(255,255,255,0.84); color: var(--ink); border-color: rgba(99,102,241,0.16); }
-        #app > nav h1 { font-size: 1.25rem; line-height: 1.1; font-weight: 900; text-transform: uppercase; letter-spacing: 0; }
-        #app > nav .bg-indigo-600 { background: linear-gradient(135deg, #6366f1, #38bdf8) !important; box-shadow: 0 12px 28px rgba(99,102,241,0.30); }
-        #syncStatus { color: #2563eb !important; }
-        #userNameDisp { color: var(--ink) !important; }
-        .nav-link { cursor: pointer; opacity: 0.62; transition: 0.3s; position: relative; z-index: 100; color: #475569; }
-        .nav-link.active { opacity: 1; color: #4f46e5; }
-        .nav-link.active::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 100%; height: 3px; border-radius: 99px; background: linear-gradient(90deg, #6366f1, #38bdf8, #f59e0b); box-shadow: 0 0 12px rgba(99,102,241,0.45); }
-        .pet-body { --pet-size: 11rem; width: var(--pet-size); height: var(--pet-size); margin: 0 auto; filter: drop-shadow(0 18px 24px rgba(15,23,42,0.24)); }
+        .nav-link { cursor: pointer; opacity: 0.5; transition: 0.3s; position: relative; z-index: 100; }
+        .nav-link.active { opacity: 1; color: #818cf8; }
+        .nav-link.active::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 100%; height: 2px; background: #818cf8; box-shadow: 0 0 10px #818cf8; }
+
+        .pet-body { --pet-size: 11rem; width: var(--pet-size); height: var(--pet-size); margin: 0 auto; filter: drop-shadow(0 0 35px rgba(255,255,255,0.3)); }
         .pet-motion { width: 100%; height: 100%; transform-origin: 50% 82%; }
         .pet-motion-egg { animation: pet-egg-hop 1.15s ease-in-out infinite; }
         .pet-motion-walk { animation: pet-walk-path 4.8s ease-in-out infinite alternate; }
@@ -52,179 +30,19 @@
         .pet-sprite-window { width: 100%; height: 100%; overflow: hidden; position: relative; }
         .pet-sprite-sheet { width: 400%; height: 100%; max-width: none; display: block; object-fit: fill; animation: pet-sprite-frames 0.72s step-end infinite; will-change: transform; }
         .pet-sprite-fallback { width: 100%; height: 100%; object-fit: contain; margin: 0 auto; }
-        .pet-sprite-window.sprite-failed .pet-sprite-sheet { display: none; }
-        .pet-avatar-img { width: 11rem; height: 11rem; object-fit: contain; display: block; margin: 0 auto; }
         .pet-sprite-window .pet-sprite-fallback { display: none; }
+        .pet-sprite-window.sprite-failed .pet-sprite-sheet { display: none; }
         .pet-sprite-window.sprite-failed .pet-sprite-fallback { display: block; }
-        @keyframes pet-sprite-frames {
-            0%, 24.999% { transform: translateX(0); }
-            25%, 49.999% { transform: translateX(-25%); }
-            50%, 74.999% { transform: translateX(-50%); }
-            75%, 100% { transform: translateX(-75%); }
-        }
-        @keyframes pet-egg-hop {
-            0%, 100% { transform: translateY(7px) rotate(-2deg); }
-            45% { transform: translateY(-14px) rotate(2deg); }
-            70% { transform: translateY(3px) rotate(-1deg); }
-        }
-        @keyframes pet-walk-path {
-            0% { transform: translateX(-18px) translateY(2px); }
-            50% { transform: translateX(0) translateY(-8px); }
-            100% { transform: translateX(18px) translateY(2px); }
-        }
-        @keyframes pet-swim-path {
-            0% { transform: translateX(-20px) translateY(6px) rotate(-2deg); }
-            50% { transform: translateX(0) translateY(-10px) rotate(2deg); }
-            100% { transform: translateX(20px) translateY(5px) rotate(-1deg); }
-        }
-        @keyframes pet-fly-path {
-            0% { transform: translateX(-18px) translateY(5px) rotate(-2deg); }
-            50% { transform: translateX(0) translateY(-16px) rotate(1deg); }
-            100% { transform: translateX(18px) translateY(4px) rotate(2deg); }
-        }
-        .dur-btn { cursor: pointer; z-index: 60; position: relative; transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
-        .dur-btn.active { background: white; color: black; font-weight: 900; transform: scale(1.05); }
-        .env-card { cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
-        .env-card.active { border-color: #818cf8; background: rgba(129, 140, 248, 0.2); }
-        .pet-opt { transition: 0.3s; border: 2px solid transparent; cursor: pointer; border-radius: 1rem; }
-        .pet-opt.selected { border-color: #818cf8; background: rgba(129, 140, 248, 0.15); transform: scale(1.05); }
+        .pet-avatar-img { width: 11rem; height: 11rem; object-fit: contain; display: block; margin: 0 auto; }
         .pet-choice-img { width: 4.5rem; height: 4.5rem; object-fit: contain; display: block; margin: 0 auto 0.75rem; filter: drop-shadow(0 0 18px rgba(255,255,255,0.24)); }
-        .mission-card { transition: all 0.25s ease; }
-        .mission-card.submitted { background: rgba(16, 185, 129, 0.2); border-color: #10b981; }
-        .mission-card.approved { background: rgba(16, 185, 129, 0.16); border-color: #34d399; }
-        .progress-fill { transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .resonance-card { animation: fadeInUp 0.5s ease-out; }
-        .hidden-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; clip-path: inset(50%); }
-        .hidden { display: none !important; }
-        .flex { display: flex; }
-        .grid { display: grid; }
-        .flex-col { flex-direction: column; }
-        .items-center { align-items: center; }
-        .items-start { align-items: flex-start; }
-        .items-end { align-items: flex-end; }
-        .justify-center { justify-content: center; }
-        .justify-between { justify-content: space-between; }
-        .flex-wrap { flex-wrap: wrap; }
-        .relative { position: relative; }
-        .absolute { position: absolute; }
-        .fixed { position: fixed; }
-        .inset-0 { inset: 0; }
-        .top-4 { top: 1rem; }
-        .left-4 { left: 1rem; }
-        .top-6 { top: 1.5rem; }
-        .left-8 { left: 2rem; }
-        .right-8 { right: 2rem; }
-        .z-\[60\] { z-index: 60; }
-        .z-\[100\] { z-index: 100; }
-        .z-\[5000\] { z-index: 5000; }
-        .w-full { width: 100%; }
-        .h-screen { height: 100vh; }
-        .min-h-screen { min-height: 100vh; }
-        .flex-grow { flex-grow: 1; }
-        .shrink-0 { flex-shrink: 0; }
-        .min-w-0 { min-width: 0; }
-        .overflow-hidden { overflow: hidden; }
-        .overflow-y-auto { overflow-y: auto; }
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .gap-2 { gap: 0.5rem; }
-        .gap-3 { gap: 0.75rem; }
-        .gap-4 { gap: 1rem; }
-        .gap-6 { gap: 1.5rem; }
-        .gap-12 { gap: 3rem; }
-        .p-3 { padding: 0.75rem; }
-        .p-4 { padding: 1rem; }
-        .p-5 { padding: 1.25rem; }
-        .p-6 { padding: 1.5rem; }
-        .p-8 { padding: 2rem; }
-        .px-4 { padding-left: 1rem; padding-right: 1rem; }
-        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
-        .px-10 { padding-left: 2.5rem; padding-right: 2.5rem; }
-        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-        .py-5 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
-        .py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
-        .mt-1 { margin-top: 0.25rem; }
-        .mt-8 { margin-top: 2rem; }
-        .mb-3 { margin-bottom: 0.75rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .mb-8 { margin-bottom: 2rem; }
-        .mx-auto { margin-left: auto; margin-right: auto; }
-        .space-y-4 > * + * { margin-top: 1rem; }
-        .space-y-8 > * + * { margin-top: 2rem; }
-        input, select, textarea, button { box-sizing: border-box; }
-        input, select, textarea {
-            border: 1px solid rgba(99,102,241,0.18);
-            border-radius: 0.9rem;
-            padding: 0.9rem 1rem;
-            background: rgba(255,255,255,0.86);
-            color: var(--ink);
-        }
-        #app { min-height: 100vh; height: 100vh; width: 100%; display: flex; flex-direction: column; padding: 1rem; gap: 1rem; overflow: hidden; box-sizing: border-box; }
-        #app > nav { min-height: 4rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem 2.5rem; flex-shrink: 0; box-sizing: border-box; }
-        #app > nav > div { display: flex; align-items: center; gap: 1.5rem; }
-        #app > nav > div:first-child { gap: 1rem; }
-        #app > nav > div:nth-child(2) { gap: 3rem; }
-        #view-focus { flex: 1 1 auto; display: flex; gap: 1rem; overflow: hidden; }
-        #view-focus > aside, #view-focus > main { min-width: 0; }
-        #view-focus > aside { display: flex; flex-direction: column; gap: 1rem; }
-        #view-focus > aside:first-child { width: 23%; }
-        #view-focus > main { width: 50%; display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
-        #view-focus > aside:last-child { width: 27%; }
-        #view-focus main > .glass:first-child { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; flex-shrink: 0; padding: 2rem; }
-        #skillDirectivesPanel { display: flex; flex-direction: column; min-height: 0; }
-        #missionContainer { flex: 1 1 auto; overflow-y: auto; }
-        #view-focus aside:first-child > .glass:nth-child(2) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
-        #view-focus aside:last-child > .glass:last-child .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
-        #authLayer { position: fixed; inset: 0; z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 1.5rem; background: rgba(5, 7, 10, 0.82); box-sizing: border-box; }
-        #authLayer.hidden { display: none !important; }
-        #entryCard, #adoptionCard { width: min(100%, 34rem); max-width: calc(100vw - 2rem); margin: 0 auto; box-sizing: border-box; }
-        #entryCard input, #entryCard button, #adoptionCard input, #adoptionCard button { width: 100%; }
-        #entryCard .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
-        #entryCard button, #adoptionCard button { border: 0; border-radius: 1rem; padding: 1rem; font-weight: 900; }
-        #adoptionCard { width: min(100%, 64rem); }
-        #adoptionCard .grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1rem; }
-        #view-resonance { flex: 1 1 auto; flex-direction: column; gap: 1.5rem; max-width: 64rem; margin: 0 auto; width: 100%; overflow: hidden; }
-        #view-resonance:not(.hidden) { display: flex; }
-        #beaconFeed { overflow-y: auto; }
-        .resonance-card { display: flex; gap: 2.5rem; align-items: flex-start; }
-        .mission-card > .flex, .task-card > .flex { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; }
-        .pet-habitat-card {
-            --pet-bg: url('assets/pet-backgrounds/cat-habitat.png');
-            --habitat-glow: rgba(99, 102, 241, 0.45);
-            --habitat-spark: rgba(255, 255, 255, 0.75);
-            background: #fff;
-            isolation: isolate;
-            overflow: hidden;
-            min-height: 470px;
-            border: 1px solid rgba(255,255,255,0.70);
-            box-shadow: 0 24px 70px rgba(59, 130, 246, 0.18), inset 0 1px 0 rgba(255,255,255,0.88);
-        }
-        .pet-habitat-card::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            background-image: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(15,23,42,0.18)), var(--pet-bg);
-            background-size: cover;
-            background-position: center;
-            transform: scale(1.04);
-            animation: habitat-pan 14s ease-in-out infinite alternate;
-        }
-        .pet-habitat-card::after {
-            content: "";
-            position: absolute;
-            inset: -12%;
-            z-index: 1;
-            pointer-events: none;
-            background:
-                radial-gradient(circle at 18% 28%, var(--habitat-spark) 0 0.22rem, transparent 0.26rem),
-                radial-gradient(circle at 78% 18%, rgba(255,255,255,0.70) 0 0.18rem, transparent 0.23rem),
-                radial-gradient(circle at 62% 70%, var(--habitat-glow) 0 0.5rem, transparent 0.58rem),
-                radial-gradient(circle at 34% 82%, rgba(255,255,255,0.58) 0 0.16rem, transparent 0.22rem);
-            filter: blur(0.2px);
-            opacity: 0.92;
-            animation: habitat-sparkle 5.4s ease-in-out infinite alternate;
-        }
+        @keyframes pet-sprite-frames { 0%, 24.999% { transform: translateX(0); } 25%, 49.999% { transform: translateX(-25%); } 50%, 74.999% { transform: translateX(-50%); } 75%, 100% { transform: translateX(-75%); } }
+        @keyframes pet-egg-hop { 0%, 100% { transform: translateY(7px) rotate(-2deg); } 45% { transform: translateY(-14px) rotate(2deg); } 70% { transform: translateY(3px) rotate(-1deg); } }
+        @keyframes pet-walk-path { 0% { transform: translateX(-18px) translateY(2px); } 50% { transform: translateX(0) translateY(-8px); } 100% { transform: translateX(18px) translateY(2px); } }
+        @keyframes pet-swim-path { 0% { transform: translateX(-20px) translateY(6px) rotate(-2deg); } 50% { transform: translateX(0) translateY(-10px) rotate(2deg); } 100% { transform: translateX(20px) translateY(5px) rotate(-1deg); } }
+        @keyframes pet-fly-path { 0% { transform: translateX(-18px) translateY(5px) rotate(-2deg); } 50% { transform: translateX(0) translateY(-16px) rotate(1deg); } 100% { transform: translateX(18px) translateY(4px) rotate(2deg); } }
+        .pet-habitat-card { --pet-bg: url('assets/pet-backgrounds/cat-habitat.png'); --habitat-glow: rgba(129, 140, 248, 0.66); --habitat-spark: rgba(251, 191, 36, 0.85); overflow: hidden; isolation: isolate; background-image: linear-gradient(180deg, rgba(5,7,10,0.10), rgba(5,7,10,0.58)), var(--pet-bg); background-size: cover; background-position: center; }
+        .pet-habitat-card::before { content: ""; position: absolute; inset: -7%; z-index: 0; background-image: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(15,23,42,0.18)), var(--pet-bg); background-size: cover; background-position: center; transform: scale(1.04); animation: habitat-pan 14s ease-in-out infinite alternate; }
+        .pet-habitat-card::after { content: ""; position: absolute; inset: -12%; z-index: 1; pointer-events: none; background: radial-gradient(circle at 18% 28%, var(--habitat-spark) 0 0.22rem, transparent 0.26rem), radial-gradient(circle at 78% 18%, rgba(255,255,255,0.70) 0 0.18rem, transparent 0.23rem), radial-gradient(circle at 62% 70%, var(--habitat-glow) 0 0.5rem, transparent 0.58rem), radial-gradient(circle at 34% 82%, rgba(255,255,255,0.58) 0 0.16rem, transparent 0.22rem); filter: blur(0.2px); opacity: 0.92; animation: habitat-sparkle 5.4s ease-in-out infinite alternate; }
         .pet-habitat-card > * { position: relative; z-index: 2; }
         .pet-habitat-cat { --pet-bg: url('assets/pet-backgrounds/cat-habitat.png'); --habitat-glow: rgba(129, 140, 248, 0.66); --habitat-spark: rgba(251, 191, 36, 0.85); }
         .pet-habitat-rabbit { --pet-bg: url('assets/pet-backgrounds/rabbit-habitat.png'); --habitat-glow: rgba(244, 114, 182, 0.56); --habitat-spark: rgba(255, 255, 255, 0.90); }
@@ -232,72 +50,24 @@
         .pet-habitat-dino { --pet-bg: url('assets/pet-backgrounds/dino-habitat.png'); --habitat-glow: rgba(168, 85, 247, 0.66); --habitat-spark: rgba(34, 211, 238, 0.85); }
         .pet-habitat-parrot { --pet-bg: url('assets/pet-backgrounds/parrot-habitat.png'); --habitat-glow: rgba(56, 189, 248, 0.60); --habitat-spark: rgba(251, 191, 36, 0.88); }
         .pet-habitat-goldfish { --pet-bg: url('assets/pet-backgrounds/goldfish-habitat.png'); --habitat-glow: rgba(34, 211, 238, 0.70); --habitat-spark: rgba(186, 230, 253, 0.90); }
-        .pet-habitat-goldfish::after {
-            background:
-                radial-gradient(circle at 20% 90%, rgba(255,255,255,0.72) 0 0.2rem, transparent 0.25rem),
-                radial-gradient(circle at 42% 74%, rgba(186,230,253,0.80) 0 0.25rem, transparent 0.31rem),
-                radial-gradient(circle at 68% 88%, rgba(255,255,255,0.60) 0 0.18rem, transparent 0.24rem),
-                linear-gradient(100deg, transparent 28%, rgba(255,255,255,0.18) 46%, transparent 64%);
-            animation: habitat-bubbles 4.8s linear infinite;
-        }
-        .pet-habitat-parrot::after {
-            background:
-                linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.40) 36%, transparent 52%),
-                radial-gradient(circle at 22% 26%, rgba(255,255,255,0.84) 0 0.22rem, transparent 0.28rem),
-                radial-gradient(circle at 80% 68%, rgba(251,191,36,0.72) 0 0.34rem, transparent 0.42rem);
-            animation: habitat-clouds 8s ease-in-out infinite alternate;
-        }
-        #evolutionTag { background: rgba(255,255,255,0.78) !important; color: #4338ca !important; border-color: rgba(255,255,255,0.82) !important; box-shadow: 0 10px 24px rgba(79,70,229,0.16); }
-        #petNameDisp { color: #ffffff; text-shadow: 0 2px 14px rgba(15,23,42,0.70); }
-        #petLevelDisp { color: #fff7ed !important; text-shadow: 0 2px 12px rgba(15,23,42,0.65); }
-        .pet-habitat-card .mt-8 { background: rgba(255,255,255,0.72); border: 1px solid rgba(255,255,255,0.72); border-radius: 1rem; padding: 0.9rem 1rem; box-shadow: 0 14px 30px rgba(15,23,42,0.12); }
-        #xpBar { background: linear-gradient(90deg, #6366f1, #38bdf8, #f59e0b) !important; }
-        #view-focus main > .glass:first-child {
-            background: linear-gradient(135deg, rgba(255,255,255,0.88), rgba(240,249,255,0.78));
-            border-color: rgba(56,189,248,0.24);
-        }
-        #timerDisplay { color: #172033; font-size: clamp(5.5rem, 13vw, 10rem); font-weight: 900; line-height: 1; margin: 2rem 0; text-shadow: 0 10px 32px rgba(56,189,248,0.20); }
-        #timerBtn, .submit-task, .claim-task {
-            background: linear-gradient(135deg, #6366f1, #38bdf8) !important;
-            color: #fff !important;
-            box-shadow: 0 14px 32px rgba(99,102,241,0.25);
-            border-radius: 1rem;
-        }
-        .dur-btn { background: rgba(255,255,255,0.72); color: #475569; border-color: rgba(99,102,241,0.14); }
-        .dur-btn.active { background: linear-gradient(135deg, #fff, #e0f2fe); color: #4338ca; box-shadow: 0 12px 24px rgba(99,102,241,0.18); }
-        #skillDirectivesPanel, #teacherNotePanel, #view-focus aside:last-child > .glass { background: rgba(255,255,255,0.82); }
-        #skillDirectivesPanel > h3 { color: #0891b2 !important; }
-        .mission-card { background: rgba(255,255,255,0.82); border-color: rgba(99,102,241,0.14); }
-        .mission-card.submitted { background: rgba(209, 250, 229, 0.82); border-color: rgba(16,185,129,0.30); }
-        .mission-card.approved { background: rgba(220, 252, 231, 0.92); border-color: rgba(34,197,94,0.34); }
-        .mission-title { color: #172033; }
-        #teacherNotePanel { border-left: 0; border-top: 6px solid rgba(245,158,11,0.85); }
-        .teacher-note-empty { color: #64748b; }
-        .teacher-note-item { background: linear-gradient(135deg, rgba(255,247,237,0.95), rgba(255,255,255,0.92)); border-color: rgba(245,158,11,0.24); }
-        .teacher-note-text { color: #172033; }
-        .teacher-note-time { color: #d97706; }
-        .env-card { background: rgba(255,255,255,0.72); color: #334155; border-color: rgba(99,102,241,0.12); }
-        .env-card.active { border-color: rgba(99,102,241,0.55); background: linear-gradient(135deg, rgba(238,242,255,0.92), rgba(224,242,254,0.88)); transform: translateY(-2px); box-shadow: 0 14px 26px rgba(99,102,241,0.16); }
-        #view-resonance .border-b { border-color: rgba(99,102,241,0.14) !important; }
-        #view-resonance h2 { color: #172033; }
-        .resonance-card { background: rgba(255,255,255,0.86); color: #172033; border-color: rgba(99,102,241,0.12); }
-        @keyframes habitat-pan {
-            0% { transform: scale(1.04) translate3d(-0.8%, -0.6%, 0); }
-            100% { transform: scale(1.08) translate3d(0.8%, 0.6%, 0); }
-        }
-        @keyframes habitat-sparkle {
-            0% { transform: translateY(0) scale(1); opacity: 0.62; }
-            100% { transform: translateY(-1.1rem) scale(1.04); opacity: 0.98; }
-        }
-        @keyframes habitat-bubbles {
-            0% { transform: translateY(1.6rem); opacity: 0.35; }
-            50% { opacity: 0.96; }
-            100% { transform: translateY(-2rem); opacity: 0.45; }
-        }
-        @keyframes habitat-clouds {
-            0% { transform: translateX(-1rem); opacity: 0.54; }
-            100% { transform: translateX(1.2rem); opacity: 0.92; }
-        }
+        .pet-habitat-goldfish::after { background: radial-gradient(circle at 20% 90%, rgba(255,255,255,0.72) 0 0.2rem, transparent 0.25rem), radial-gradient(circle at 42% 74%, rgba(186,230,253,0.80) 0 0.25rem, transparent 0.31rem), radial-gradient(circle at 68% 88%, rgba(255,255,255,0.60) 0 0.18rem, transparent 0.24rem), linear-gradient(100deg, transparent 28%, rgba(255,255,255,0.18) 46%, transparent 64%); animation: habitat-bubbles 4.8s linear infinite; }
+        .pet-habitat-parrot::after { background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.40) 36%, transparent 52%), radial-gradient(circle at 22% 26%, rgba(255,255,255,0.84) 0 0.22rem, transparent 0.28rem), radial-gradient(circle at 78% 70%, var(--habitat-spark) 0 0.2rem, transparent 0.26rem); animation: habitat-clouds 8s ease-in-out infinite alternate; }
+        @keyframes habitat-pan { 0% { transform: scale(1.04) translate3d(-1.2%, -0.8%, 0); } 100% { transform: scale(1.08) translate3d(1.4%, 1%, 0); } }
+        @keyframes habitat-sparkle { 0% { opacity: 0.62; transform: translate3d(-0.3rem, 0.2rem, 0); } 100% { opacity: 1; transform: translate3d(0.5rem, -0.4rem, 0); } }
+        @keyframes habitat-bubbles { 0% { transform: translateY(1.3rem); opacity: 0.55; } 100% { transform: translateY(-1.3rem); opacity: 1; } }
+        @keyframes habitat-clouds { 0% { transform: translateX(-0.8rem); opacity: 0.62; } 100% { transform: translateX(1rem); opacity: 0.95; } }
+.dur-btn { cursor: pointer; z-index: 60; position: relative; transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
+        .dur-btn.active { background: white; color: black; font-weight: 900; transform: scale(1.05); }
+        .env-card { cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
+        .env-card.active { border-color: #818cf8; background: rgba(129, 140, 248, 0.2); }
+        .pet-opt { transition: 0.3s; border: 2px solid transparent; cursor: pointer; border-radius: 1rem; }
+        .pet-opt.selected { border-color: #818cf8; background: rgba(129, 140, 248, 0.15); transform: scale(1.05); }
+        .mission-card { transition: all 0.25s ease; }
+        .mission-card.submitted { background: rgba(16, 185, 129, 0.2); border-color: #10b981; }
+        .mission-card.approved { background: rgba(16, 185, 129, 0.16); border-color: #34d399; }
+        .progress-fill { transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .resonance-card { animation: fadeInUp 0.5s ease-out; }
+        .hidden-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; clip-path: inset(50%); }
         #privateFeedback { display: flex; flex-direction: column; gap: 0.65rem; }
         .teacher-note-empty { color: #cbd5e1; font-style: italic; line-height: 1.6; }
         .teacher-note-item { background: rgba(255,255,255,0.07); border: 1px solid rgba(251,191,36,0.18); border-radius: 0.9rem; padding: 0.8rem 0.9rem; }
@@ -305,9 +75,7 @@
         .teacher-note-time { margin-top: 0.45rem; color: #fbbf24; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
         @media (min-width: 1024px) {
             #view-focus > aside:first-child > .glass:first-child { min-height: clamp(300px, 42vh, 440px); padding: 1.25rem; }
-            #view-focus > aside:first-child > .pet-habitat-card { min-height: clamp(440px, 52vh, 560px); }
             #view-focus > aside:first-child > .glass:first-child .py-10 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
-            .pet-body { --pet-size: clamp(8rem, 11vw, 11rem); }
             .pet-avatar-img { width: clamp(8rem, 11vw, 11rem); height: clamp(8rem, 11vw, 11rem); }
             #teacherNotePanel { min-height: 190px; padding: 1.6rem; }
             #teacherNotePanel h3 { font-size: 0.78rem; margin-bottom: 1rem; }
@@ -337,10 +105,7 @@
             #view-focus > main { gap: 0.75rem; }
             #view-focus .glass { padding: 1rem; }
             #view-focus aside:first-child .glass:first-child { min-height: 0; }
-            #view-focus aside:first-child .pet-habitat-card { min-height: 390px; padding: 1rem; }
-            .pet-habitat-card .mt-8 { margin-top: 1rem; padding: 0.75rem; }
-            .pet-body { --pet-size: 8.2rem; }
-            .pet-avatar-img { width: 8.2rem; height: 8.2rem; }
+            .pet-avatar-img { width: 7.5rem; height: 7.5rem; }
             #petAvatar + *, #petNameDisp { font-size: 1.25rem; }
             #timerDisplay { font-size: clamp(4rem, 22vw, 6.25rem); margin: 4rem 0 1.5rem; }
             #timerBtn { width: 100%; padding: 1rem; letter-spacing: 0.12em; }
@@ -361,7 +126,6 @@
             .resonance-card input, .resonance-card button { width: 100%; }
             #authLayer { align-items: flex-start; overflow-y: auto; padding: 1rem; }
             #entryCard, #adoptionCard, #reflectLayer .glass { padding: 1.25rem; border-radius: 1rem; }
-            #entryCard, #adoptionCard { width: 78vw !important; max-width: 18rem !important; }
             #entryCard h2, #adoptionCard h2 { font-size: 2.25rem; margin-bottom: 1.5rem; }
             #entryCard input, #passwordInput, #usernameInput { padding-top: 1rem; padding-bottom: 1rem; font-size: 1rem; }
             #entryCard .grid { grid-template-columns: 1fr; }
@@ -407,7 +171,7 @@
                     </div>
                     <p id="petLevelDisp" class="text-indigo-400 font-bold text-xs uppercase tracking-[0.2em] mt-1">Level 1</p>
                     <div class="mt-8 px-4">
-                        <div class="flex justify-between text-[9px] font-bold text-slate-500 mb-2 uppercase"><span>EVO FEEDS</span><span id="xpPercent">0/5</span></div>
+                        <div class="flex justify-between text-[9px] font-bold text-slate-500 mb-2 uppercase"><span>Neural XP</span><span id="xpPercent">0%</span></div>
                         <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden border border-white/5"><div id="xpBar" class="progress-fill bg-indigo-500 h-full w-0"></div></div>
                     </div>
                 </div>
@@ -521,12 +285,20 @@
         const SUPABASE_URL = "https://pwtlujuhxajddjoptaxv.supabase.co";
         const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_qUotl0d8CiMz6VV3EvEHtA_2KfvY_Bu";
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-        const DEFAULT_BG = "radial-gradient(circle at 12% 8%, rgba(56,189,248,0.30), transparent 28rem), radial-gradient(circle at 88% 14%, rgba(236,72,153,0.20), transparent 24rem), radial-gradient(circle at 58% 92%, rgba(16,185,129,0.18), transparent 26rem), linear-gradient(135deg, #f9fbff 0%, #eef7ff 42%, #fff7ed 100%)";
+        const DEFAULT_BG = "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2560";
         const envs = {
             study: DEFAULT_BG,
-            starry: "radial-gradient(circle at 20% 18%, rgba(129,140,248,0.42), transparent 24rem), radial-gradient(circle at 78% 20%, rgba(56,189,248,0.28), transparent 22rem), radial-gradient(circle at 52% 82%, rgba(251,191,36,0.18), transparent 24rem), linear-gradient(135deg, #eef2ff 0%, #f5f3ff 46%, #e0f2fe 100%)",
-            forest: "radial-gradient(circle at 18% 12%, rgba(16,185,129,0.30), transparent 24rem), radial-gradient(circle at 82% 24%, rgba(251,191,36,0.20), transparent 22rem), radial-gradient(circle at 50% 88%, rgba(45,212,191,0.24), transparent 26rem), linear-gradient(135deg, #f0fdf4 0%, #ecfeff 48%, #fff7ed 100%)",
-            tech: "radial-gradient(circle at 18% 18%, rgba(56,189,248,0.38), transparent 24rem), radial-gradient(circle at 84% 16%, rgba(168,85,247,0.24), transparent 22rem), radial-gradient(circle at 58% 88%, rgba(236,72,153,0.18), transparent 24rem), linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #fdf2f8 100%)"
+            starry: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2560",
+            forest: "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=2560",
+            tech: "https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=2560"
+        };
+        const evoMatrix = {
+            cat: ["🥚", "🐱", "😺", "😸", "😼", "🧠🐱", "⚡🐱", "👑🐱", "🌌🐱", "💎🐱"],
+            monkey: ["🥚", "🐵", "🙈", "🙉", "🙊", "🧠🐵", "⚡🐵", "👑🐵", "🌌🐵", "💎🐵"],
+            dino: ["🥚", "🦖", "🦕", "⚡🦖", "🧠🦖", "👑🦖", "🌌🦖", "💎🦖", "🔥🦖", "🚀🦖"],
+            parrot: ["🥚", "🦜", "✨🦜", "⚡🦜", "🧠🦜", "👑🦜", "🌌🦜", "💎🦜", "🔥🦜", "🚀🦜"],
+            rabbit: ["🥚", "🐰", "🐇", "✨🐰", "⚡🐰", "🧠🐰", "👑🐰", "🌌🐰", "💎🐰", "🚀🐰"],
+            goldfish: ["🥚", "🐠", "🐟", "✨🐠", "⚡🐠", "🧠🐠", "👑🐠", "🌌🐠", "💎🐠", "🚀🐠"]
         };
         const petHabitatClasses = {
             cat: "pet-habitat-cat",
@@ -687,8 +459,8 @@
 
         function protectLocalInventory(serverStudent) {
             const merged = normalizeStudent(serverStudent, state.user.username);
-            merged.feedCount = Math.max(toNumber(merged.feedCount, 0), toNumber(state.user.feedCount, 0));
             const hasPendingReward = Object.keys(getPendingRewards()).length > 0;
+            merged.feedCount = Math.max(toNumber(merged.feedCount, 0), toNumber(state.user.feedCount, 0));
             if (hasPendingReward) {
                 for (const item of ["cookie", "candy", "apple"]) {
                     merged[item] = Math.max(toNumber(merged[item], 0), toNumber(state.user[item], 0));
@@ -1753,7 +1525,7 @@
 
         function changeEnv(type, btn) {
             state.env = type;
-            document.body.style.backgroundImage = envs[type] || DEFAULT_BG;
+            document.body.style.backgroundImage = `url('${envs[type] || DEFAULT_BG}')`;
             document.querySelectorAll(".env-card").forEach(card => card.classList.remove("active"));
             btn.classList.add("active");
         }
