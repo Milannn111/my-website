@@ -22,7 +22,7 @@
         .nav-link.active::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 100%; height: 2px; background: #818cf8; box-shadow: 0 0 10px #818cf8; }
 
         .pet-body { --pet-size: 12.8rem; width: var(--pet-size); height: var(--pet-size); margin: 0 auto; overflow: visible; filter: drop-shadow(0 0 35px rgba(255,255,255,0.3)); }
-        .pet-motion { width: 100%; height: 100%; transform-origin: 50% 82%; }
+        .pet-motion { width: 100%; height: 100%; transform-origin: 50% 100%; }
         .pet-motion-egg { animation: pet-egg-hop 1.15s ease-in-out infinite; }
         .pet-motion-walk { animation: pet-walk-path 4.8s ease-in-out infinite alternate; }
         .pet-motion-swim { animation: pet-swim-path 5.2s ease-in-out infinite alternate; }
@@ -36,44 +36,42 @@
         .pet-avatar-img { width: 12.8rem; height: 12.8rem; object-fit: contain; display: block; margin: 0 auto; }
         .pet-choice-img { width: 4.5rem; height: 4.5rem; object-fit: contain; display: block; margin: 0 auto 0.75rem; filter: drop-shadow(0 0 18px rgba(255,255,255,0.24)); }
         @keyframes pet-sprite-frames { 0%, 24.999% { transform: translateX(0); } 25%, 49.999% { transform: translateX(-25%); } 50%, 74.999% { transform: translateX(-50%); } 75%, 100% { transform: translateX(-75%); } }
-        @keyframes pet-egg-hop { 0%, 100% { transform: translateY(7px) rotate(-2deg); } 45% { transform: translateY(-14px) rotate(2deg); } 70% { transform: translateY(3px) rotate(-1deg); } }
-        @keyframes pet-walk-path { 0% { transform: translateX(-18px) translateY(2px); } 50% { transform: translateX(0) translateY(-8px); } 100% { transform: translateX(18px) translateY(2px); } }
-        @keyframes pet-swim-path { 0% { transform: translateX(-20px) translateY(6px) rotate(-2deg); } 50% { transform: translateX(0) translateY(-10px) rotate(2deg); } 100% { transform: translateX(20px) translateY(5px) rotate(-1deg); } }
-        @keyframes pet-fly-path { 0% { transform: translateX(-18px) translateY(5px) rotate(-2deg); } 50% { transform: translateX(0) translateY(-16px) rotate(1deg); } 100% { transform: translateX(18px) translateY(4px) rotate(2deg); } }
-        .pet-habitat-card { --pet-bg: url('assets/pet-backgrounds/cat-habitat.png'); --habitat-glow: rgba(129, 140, 248, 0.66); --habitat-spark: rgba(251, 191, 36, 0.85); overflow: hidden; isolation: isolate; background-image: linear-gradient(180deg, rgba(5,7,10,0.08), rgba(5,7,10,0.54)), var(--pet-bg); background-size: cover; background-position: center; }
-        .pet-habitat-card::before { content: ""; position: absolute; inset: -16%; z-index: 0; background-image: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(15,23,42,0.16)), var(--pet-bg); background-size: 118% 118%; background-position: 40% 42%; transform: scale(1.12); animation: habitat-pan 7s ease-in-out infinite alternate; }
-        .pet-habitat-card::after { content: ""; position: absolute; inset: -18%; z-index: 1; pointer-events: none; background:
-                radial-gradient(circle at 14% 24%, var(--habitat-spark) 0 0.28rem, transparent 0.34rem),
-                radial-gradient(circle at 80% 16%, rgba(255,255,255,0.78) 0 0.24rem, transparent 0.32rem),
-                radial-gradient(circle at 62% 66%, var(--habitat-glow) 0 0.8rem, transparent 0.95rem),
-                radial-gradient(circle at 34% 84%, rgba(255,255,255,0.66) 0 0.22rem, transparent 0.3rem),
-                linear-gradient(112deg, transparent 18%, rgba(255,255,255,0.22) 42%, transparent 62%);
-            background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 220% 220%;
-            filter: blur(0.1px); opacity: 0.95; animation: habitat-sparkle 3.6s ease-in-out infinite alternate; }
-        .pet-habitat-card > * { position: relative; z-index: 2; }
-        .pet-habitat-cat { --pet-bg: url('assets/pet-backgrounds/cat-habitat.png'); --habitat-glow: rgba(129, 140, 248, 0.66); --habitat-spark: rgba(251, 191, 36, 0.85); }
-        .pet-habitat-rabbit { --pet-bg: url('assets/pet-backgrounds/rabbit-habitat.png'); --habitat-glow: rgba(244, 114, 182, 0.56); --habitat-spark: rgba(255, 255, 255, 0.90); }
-        .pet-habitat-monkey { --pet-bg: url('assets/pet-backgrounds/monkey-habitat.png'); --habitat-glow: rgba(16, 185, 129, 0.52); --habitat-spark: rgba(251, 191, 36, 0.82); }
-        .pet-habitat-dino { --pet-bg: url('assets/pet-backgrounds/dino-habitat.png'); --habitat-glow: rgba(168, 85, 247, 0.66); --habitat-spark: rgba(34, 211, 238, 0.85); }
-        .pet-habitat-parrot { --pet-bg: url('assets/pet-backgrounds/parrot-habitat.png'); --habitat-glow: rgba(56, 189, 248, 0.60); --habitat-spark: rgba(251, 191, 36, 0.88); }
-        .pet-habitat-goldfish { --pet-bg: url('assets/pet-backgrounds/goldfish-habitat.png'); --habitat-glow: rgba(34, 211, 238, 0.70); --habitat-spark: rgba(186, 230, 253, 0.90); }
-        .pet-habitat-goldfish::after { background:
-                radial-gradient(circle at 18% 94%, rgba(255,255,255,0.76) 0 0.24rem, transparent 0.31rem),
-                radial-gradient(circle at 36% 78%, rgba(186,230,253,0.88) 0 0.32rem, transparent 0.4rem),
-                radial-gradient(circle at 68% 90%, rgba(255,255,255,0.64) 0 0.22rem, transparent 0.3rem),
-                radial-gradient(circle at 84% 74%, rgba(125,211,252,0.82) 0 0.28rem, transparent 0.36rem),
-                linear-gradient(100deg, transparent 24%, rgba(255,255,255,0.24) 46%, transparent 68%);
-            animation: habitat-bubbles 3.4s linear infinite; }
-        .pet-habitat-parrot::after { background:
-                linear-gradient(105deg, transparent 14%, rgba(255,255,255,0.48) 34%, transparent 56%),
-                radial-gradient(circle at 22% 26%, rgba(255,255,255,0.86) 0 0.24rem, transparent 0.31rem),
-                radial-gradient(circle at 78% 70%, var(--habitat-spark) 0 0.26rem, transparent 0.34rem),
-                radial-gradient(circle at 50% 14%, rgba(186,230,253,0.64) 0 0.7rem, transparent 0.9rem);
-            animation: habitat-clouds 5.5s ease-in-out infinite alternate; }
-        @keyframes habitat-pan { 0% { transform: scale(1.12) translate3d(-4.5%, -3%, 0); background-position: 34% 38%; } 100% { transform: scale(1.2) translate3d(4%, 3.5%, 0); background-position: 68% 58%; } }
-        @keyframes habitat-sparkle { 0% { opacity: 0.55; transform: translate3d(-1.2rem, 0.8rem, 0) scale(0.96); background-position: 0 0, 0 0, 0 0, 0 0, 0% 40%; } 100% { opacity: 1; transform: translate3d(1.2rem, -1rem, 0) scale(1.04); background-position: 0 0, 0 0, 0 0, 0 0, 100% 58%; } }
-        @keyframes habitat-bubbles { 0% { transform: translateY(2.4rem) translateX(-0.8rem); opacity: 0.28; } 45% { opacity: 1; } 100% { transform: translateY(-2.8rem) translateX(0.9rem); opacity: 0.86; } }
-        @keyframes habitat-clouds { 0% { transform: translateX(-2rem) translateY(0.4rem); opacity: 0.52; } 100% { transform: translateX(2.2rem) translateY(-0.6rem); opacity: 1; } }
+        @keyframes pet-egg-hop { 0%, 100% { transform: translateX(0) translateY(0) rotate(-2deg); } 42% { transform: translateX(0) translateY(-16px) rotate(2deg); } 70% { transform: translateX(0) translateY(0) rotate(-1deg); } }
+        @keyframes pet-walk-path { 0% { transform: translateX(calc(var(--travel-x) * -1)); } 100% { transform: translateX(var(--travel-x)); } }
+        @keyframes pet-swim-path { 0% { transform: translateX(calc(var(--travel-x) * -1)) translateY(0.45rem) rotate(-2deg); } 50% { transform: translateX(0) translateY(-0.55rem) rotate(2deg); } 100% { transform: translateX(var(--travel-x)) translateY(0.35rem) rotate(-1deg); } }
+        @keyframes pet-fly-path { 0% { transform: translateX(calc(var(--travel-x) * -1)) translateY(0.1rem) rotate(-2deg); } 50% { transform: translateX(0) translateY(-1rem) rotate(1deg); } 100% { transform: translateX(var(--travel-x)) translateY(0.1rem) rotate(2deg); } }
+        .pet-habitat-card {
+            --pet-base: url('assets/pet-backgrounds/cat-base.png');
+            --pet-motion-layer: url('assets/pet-backgrounds/cat-motion.png');
+            --pet-foreground: url('assets/pet-backgrounds/cat-foreground.png');
+            --travel-x: 1.1rem;
+            overflow: hidden; isolation: isolate; background: #06101f;
+        }
+        .habitat-layer { position: absolute; inset: 0; pointer-events: none; }
+        .habitat-base { z-index: 0; background-image: linear-gradient(180deg, rgba(6,10,22,0.02), rgba(6,10,22,0.26)), var(--pet-base); background-size: cover; background-position: center; transform: scale(1.02); }
+        .habitat-motion { z-index: 1; background-image: var(--pet-motion-layer); background-size: cover; background-position: center; opacity: 0.92; animation: habitat-drift 7s ease-in-out infinite alternate; mix-blend-mode: screen; }
+        .pet-habitat-card > :not(.habitat-layer) { position: relative; z-index: 3; }
+        .pet-stage { height: 13.7rem; margin: 1.7rem 0 0.35rem; display: flex; align-items: flex-end; justify-content: center; position: relative; z-index: 3; overflow: visible; }
+        .pet-stage::before { content: ""; position: absolute; left: 24%; right: 24%; bottom: 0.9rem; height: 1.1rem; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,0.34), rgba(0,0,0,0)); filter: blur(5px); z-index: 1; }
+        .pet-stage-foreground { position: absolute; left: -1.25rem; right: -1.25rem; bottom: -0.75rem; height: 42%; z-index: 4; pointer-events: none; background-image: var(--pet-foreground); background-size: cover; background-position: center bottom; animation: foreground-breathe 4.8s ease-in-out infinite alternate; }
+        #petAvatar { position: relative; z-index: 3; }
+        .pet-habitat-cat { --pet-base: url('assets/pet-backgrounds/cat-base.png'); --pet-motion-layer: url('assets/pet-backgrounds/cat-motion.png'); --pet-foreground: url('assets/pet-backgrounds/cat-foreground.png'); --travel-x: 1rem; }
+        .pet-habitat-rabbit { --pet-base: url('assets/pet-backgrounds/rabbit-base.png'); --pet-motion-layer: url('assets/pet-backgrounds/rabbit-motion.png'); --pet-foreground: url('assets/pet-backgrounds/rabbit-foreground.png'); --travel-x: 1rem; }
+        .pet-habitat-monkey { --pet-base: url('assets/pet-backgrounds/monkey-base.png'); --pet-motion-layer: url('assets/pet-backgrounds/monkey-motion.png'); --pet-foreground: url('assets/pet-backgrounds/monkey-foreground.png'); --travel-x: 1.05rem; }
+        .pet-habitat-dino { --pet-base: url('assets/pet-backgrounds/dino-base.png'); --pet-motion-layer: url('assets/pet-backgrounds/dino-motion.png'); --pet-foreground: url('assets/pet-backgrounds/dino-foreground.png'); --travel-x: 0.85rem; }
+        .pet-habitat-parrot { --pet-base: url('assets/pet-backgrounds/parrot-base.png'); --pet-motion-layer: url('assets/pet-backgrounds/parrot-motion.png'); --pet-foreground: url('assets/pet-backgrounds/parrot-foreground.png'); --travel-x: 1.2rem; }
+        .pet-habitat-goldfish { --pet-base: url('assets/pet-backgrounds/goldfish-base.png'); --pet-motion-layer: url('assets/pet-backgrounds/goldfish-motion.png'); --pet-foreground: url('assets/pet-backgrounds/goldfish-foreground.png'); --travel-x: 1.35rem; }
+        .pet-habitat-monkey .habitat-motion, .pet-habitat-dino .habitat-motion { animation: waterfall-flow 1.15s linear infinite; opacity: 0.95; }
+        .pet-habitat-goldfish .habitat-motion { animation: bubble-flow 3.2s linear infinite; opacity: 0.9; }
+        .pet-habitat-parrot .habitat-motion { animation: cloud-flow 6s ease-in-out infinite alternate; opacity: 0.82; }
+        .pet-habitat-goldfish .pet-stage { align-items: center; height: 13.9rem; margin-top: 1.4rem; }
+        .pet-habitat-goldfish .pet-stage::before { opacity: 0.18; bottom: 3.4rem; }
+        .pet-habitat-parrot .pet-stage { align-items: center; }
+        @keyframes habitat-drift { 0% { transform: translate3d(-0.8rem, 0.4rem, 0) scale(1.02); } 100% { transform: translate3d(0.8rem, -0.5rem, 0) scale(1.04); } }
+        @keyframes waterfall-flow { 0% { transform: translate3d(0, -1.4rem, 0) scale(1.03); opacity: 0.7; } 50% { opacity: 1; } 100% { transform: translate3d(0.15rem, 1.4rem, 0) scale(1.03); opacity: 0.82; } }
+        @keyframes bubble-flow { 0% { transform: translate3d(-0.3rem, 2rem, 0) scale(1.02); opacity: 0.42; } 40% { opacity: 0.95; } 100% { transform: translate3d(0.45rem, -2.4rem, 0) scale(1.04); opacity: 0.74; } }
+        @keyframes cloud-flow { 0% { transform: translate3d(-1.6rem, 0.3rem, 0) scale(1.02); } 100% { transform: translate3d(1.8rem, -0.3rem, 0) scale(1.04); } }
+        @keyframes foreground-breathe { 0% { transform: translateX(-0.25rem); } 100% { transform: translateX(0.25rem); } }
 .dur-btn { cursor: pointer; z-index: 60; position: relative; transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
         .dur-btn.active { background: white; color: black; font-weight: 900; transform: scale(1.05); }
         .env-card { cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
@@ -93,7 +91,7 @@
         .teacher-note-time { margin-top: 0.45rem; color: #fbbf24; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
         @media (min-width: 1024px) {
             #view-focus > aside:first-child > .glass:first-child { min-height: clamp(330px, 45vh, 470px); padding: 1.25rem; }
-            #view-focus > aside:first-child > .glass:first-child .py-10 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+            .pet-stage { height: clamp(12.9rem, 16vw, 14.2rem); margin-top: 1.55rem; }
             .pet-body { --pet-size: clamp(11.8rem, 15vw, 12.8rem); }
             .pet-avatar-img { width: clamp(11.8rem, 15vw, 12.8rem); height: clamp(11.8rem, 15vw, 12.8rem); }
             #teacherNotePanel { min-height: 190px; padding: 1.6rem; }
@@ -124,6 +122,7 @@
             #view-focus > main { gap: 0.75rem; }
             #view-focus .glass { padding: 1rem; }
             #view-focus aside:first-child .glass:first-child { min-height: 0; }
+            .pet-stage { height: 10.6rem; margin-top: 1.1rem; margin-bottom: 0.1rem; }
             .pet-body { --pet-size: 9.4rem; }
             .pet-avatar-img { width: 9.4rem; height: 9.4rem; }
             #petAvatar + *, #petNameDisp { font-size: 1.25rem; }
@@ -181,8 +180,13 @@
         <div id="view-focus" class="flex-grow flex gap-4 overflow-hidden animate__animated animate__fadeIn">
             <aside class="w-[23%] flex flex-col gap-4 no-scrollbar">
                 <div id="petHabitatCard" class="glass pet-habitat-card pet-habitat-cat p-6 text-center relative flex flex-col justify-center min-h-[440px]">
+                    <div class="habitat-layer habitat-base" aria-hidden="true"></div>
+                    <div class="habitat-layer habitat-motion" aria-hidden="true"></div>
                     <div id="evolutionTag" class="absolute top-4 left-4 bg-white/10 border border-white/20 px-3 py-1 rounded-full text-[9px] font-black uppercase text-indigo-300">Neural Sync</div>
-                    <div class="py-10"><div id="petAvatar" class="pet-body select-none"></div></div>
+                    <div class="pet-stage">
+                        <div id="petAvatar" class="pet-body select-none"></div>
+                        <div class="pet-stage-foreground" aria-hidden="true"></div>
+                    </div>
                     <div class="mt-1 flex items-center justify-center gap-2">
                         <h2 id="petNameDisp" class="text-2xl font-black tracking-tight">Guardian</h2>
                         <button onclick="renamePet()" title="Rename guardian" class="w-8 h-8 rounded-full border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:bg-indigo-500/20 transition">
