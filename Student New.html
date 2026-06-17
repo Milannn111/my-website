@@ -50,8 +50,8 @@
             overflow: hidden; isolation: isolate; background: #06101f;
         }
         .habitat-layer { position: absolute; inset: 0; pointer-events: none; }
-        .habitat-base { z-index: 0; background-image: linear-gradient(180deg, rgba(6,10,22,0.02), rgba(6,10,22,0.24)), var(--pet-bg-sheet), var(--pet-base); background-size: 100% 100%, 400% 100%, cover; background-position: 0 0, 0 0, center; transform: scale(1.02); animation: habitat-sheet-frames 7.2s steps(4) infinite; }
-        .habitat-motion { z-index: 1; background-image: var(--pet-motion-layer); background-size: cover; background-position: center; opacity: 0.32; animation: habitat-drift 7s ease-in-out infinite alternate; mix-blend-mode: screen; }
+        .habitat-base { z-index: 0; background-image: linear-gradient(180deg, rgba(6,10,22,0.02), rgba(6,10,22,0.24)), var(--pet-bg-sheet), var(--pet-base); background-size: 100% 100%, 800% 100%, cover; background-position: 0 0, 0 0, center; transform: scale(1.02); animation: habitat-sheet-frames 8.8s steps(8) infinite; }
+        .habitat-motion { display: none; }
         .pet-habitat-card > :not(.habitat-layer) { position: relative; z-index: 3; }
         .pet-habitat-card > .pet-info { position: absolute; top: 0.55rem; left: 1rem; right: 1rem; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 0.1rem; pointer-events: auto; }
         .pet-name-row { display: flex; align-items: center; justify-content: center; gap: 0.35rem; max-width: 100%; padding: 0.22rem 0.55rem; border-radius: 999px; background: rgba(5, 7, 14, 0.2); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
@@ -250,7 +250,7 @@
                     </div>
                     <div id="timerActions" class="absolute top-6 right-8 z-[60] flex flex-col items-end gap-2">
                         <button onclick="quickWarp()" class="text-[9px] font-black text-indigo-400 hover:text-white transition uppercase tracking-widest"><i class="fas fa-bolt-lightning"></i> Quick Warp</button>
-                        <button onclick="grantDemoApples()" class="bg-emerald-500/15 border border-emerald-300/25 text-emerald-200 hover:bg-emerald-500/25 hover:text-white px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition"><i class="fas fa-flask mr-1"></i> Demo +100 Apples</button>
+                        <button id="demoApplesBtn" onclick="grantDemoApples(this)" class="bg-emerald-500/15 border border-emerald-300/25 text-emerald-200 hover:bg-emerald-500/25 hover:text-white px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition"><i class="fas fa-flask mr-1"></i> Demo +100 Apples</button>
                     </div>
                     <div id="timerDisplay" class="text-[10rem] font-black tracking-tighter leading-none my-8 drop-shadow-2xl">25:00</div>
                     <button id="timerBtn" onclick="toggleTimer()" class="bg-white text-slate-950 px-20 py-5 rounded-2xl font-black tracking-[0.3em] text-sm hover:scale-105 transition shadow-2xl uppercase">Initialize Focus</button>
@@ -1355,11 +1355,23 @@
             state.timeRem = 1;
         }
 
-        function grantDemoApples() {
+        function grantDemoApples(btn) {
             if (!state.user) return alert("Login first.");
             state.user.apple = Math.max(0, toNumber(state.user.apple, 0)) + 100;
             cacheStudent(state.user);
             render();
+            const demoBtn = btn || document.getElementById("demoApplesBtn");
+            if (demoBtn) {
+                const original = demoBtn.dataset.originalText || demoBtn.innerHTML;
+                demoBtn.dataset.originalText = original;
+                demoBtn.innerHTML = '<i class="fas fa-check mr-1"></i> +100 Added';
+                demoBtn.classList.add("bg-emerald-500/35", "text-white");
+                clearTimeout(state.demoFeedbackTimer);
+                state.demoFeedbackTimer = setTimeout(() => {
+                    demoBtn.innerHTML = original;
+                    demoBtn.classList.remove("bg-emerald-500/35", "text-white");
+                }, 1200);
+            }
             saveData().catch(console.error);
         }
 
