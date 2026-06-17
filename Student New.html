@@ -21,28 +21,35 @@
         .nav-link.active { opacity: 1; color: #818cf8; }
         .nav-link.active::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 100%; height: 2px; background: #818cf8; box-shadow: 0 0 10px #818cf8; }
 
-        .pet-body { --pet-size: 11rem; width: var(--pet-size); height: var(--pet-size); margin: 0 auto; filter: drop-shadow(0 0 35px rgba(255,255,255,0.3)); }
+        .pet-body { --pet-size: 12.8rem; width: var(--pet-size); height: var(--pet-size); margin: 0 auto; overflow: visible; filter: drop-shadow(0 0 35px rgba(255,255,255,0.3)); }
         .pet-motion { width: 100%; height: 100%; transform-origin: 50% 82%; }
         .pet-motion-egg { animation: pet-egg-hop 1.15s ease-in-out infinite; }
         .pet-motion-walk { animation: pet-walk-path 4.8s ease-in-out infinite alternate; }
         .pet-motion-swim { animation: pet-swim-path 5.2s ease-in-out infinite alternate; }
         .pet-motion-fly { animation: pet-fly-path 4.4s ease-in-out infinite alternate; }
-        .pet-sprite-window { width: 100%; height: 100%; overflow: hidden; position: relative; }
+        .pet-sprite-window { width: 100%; height: 100%; overflow: hidden; position: relative; transform: scale(1.08); transform-origin: center; }
         .pet-sprite-sheet { width: 400%; height: 100%; max-width: none; display: block; object-fit: fill; animation: pet-sprite-frames 0.72s step-end infinite; will-change: transform; }
         .pet-sprite-fallback { width: 100%; height: 100%; object-fit: contain; margin: 0 auto; }
         .pet-sprite-window .pet-sprite-fallback { display: none; }
         .pet-sprite-window.sprite-failed .pet-sprite-sheet { display: none; }
         .pet-sprite-window.sprite-failed .pet-sprite-fallback { display: block; }
-        .pet-avatar-img { width: 11rem; height: 11rem; object-fit: contain; display: block; margin: 0 auto; }
+        .pet-avatar-img { width: 12.8rem; height: 12.8rem; object-fit: contain; display: block; margin: 0 auto; }
         .pet-choice-img { width: 4.5rem; height: 4.5rem; object-fit: contain; display: block; margin: 0 auto 0.75rem; filter: drop-shadow(0 0 18px rgba(255,255,255,0.24)); }
         @keyframes pet-sprite-frames { 0%, 24.999% { transform: translateX(0); } 25%, 49.999% { transform: translateX(-25%); } 50%, 74.999% { transform: translateX(-50%); } 75%, 100% { transform: translateX(-75%); } }
         @keyframes pet-egg-hop { 0%, 100% { transform: translateY(7px) rotate(-2deg); } 45% { transform: translateY(-14px) rotate(2deg); } 70% { transform: translateY(3px) rotate(-1deg); } }
         @keyframes pet-walk-path { 0% { transform: translateX(-18px) translateY(2px); } 50% { transform: translateX(0) translateY(-8px); } 100% { transform: translateX(18px) translateY(2px); } }
         @keyframes pet-swim-path { 0% { transform: translateX(-20px) translateY(6px) rotate(-2deg); } 50% { transform: translateX(0) translateY(-10px) rotate(2deg); } 100% { transform: translateX(20px) translateY(5px) rotate(-1deg); } }
         @keyframes pet-fly-path { 0% { transform: translateX(-18px) translateY(5px) rotate(-2deg); } 50% { transform: translateX(0) translateY(-16px) rotate(1deg); } 100% { transform: translateX(18px) translateY(4px) rotate(2deg); } }
-        .pet-habitat-card { --pet-bg: url('assets/pet-backgrounds/cat-habitat.png'); --habitat-glow: rgba(129, 140, 248, 0.66); --habitat-spark: rgba(251, 191, 36, 0.85); overflow: hidden; isolation: isolate; background-image: linear-gradient(180deg, rgba(5,7,10,0.10), rgba(5,7,10,0.58)), var(--pet-bg); background-size: cover; background-position: center; }
-        .pet-habitat-card::before { content: ""; position: absolute; inset: -7%; z-index: 0; background-image: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(15,23,42,0.18)), var(--pet-bg); background-size: cover; background-position: center; transform: scale(1.04); animation: habitat-pan 14s ease-in-out infinite alternate; }
-        .pet-habitat-card::after { content: ""; position: absolute; inset: -12%; z-index: 1; pointer-events: none; background: radial-gradient(circle at 18% 28%, var(--habitat-spark) 0 0.22rem, transparent 0.26rem), radial-gradient(circle at 78% 18%, rgba(255,255,255,0.70) 0 0.18rem, transparent 0.23rem), radial-gradient(circle at 62% 70%, var(--habitat-glow) 0 0.5rem, transparent 0.58rem), radial-gradient(circle at 34% 82%, rgba(255,255,255,0.58) 0 0.16rem, transparent 0.22rem); filter: blur(0.2px); opacity: 0.92; animation: habitat-sparkle 5.4s ease-in-out infinite alternate; }
+        .pet-habitat-card { --pet-bg: url('assets/pet-backgrounds/cat-habitat.png'); --habitat-glow: rgba(129, 140, 248, 0.66); --habitat-spark: rgba(251, 191, 36, 0.85); overflow: hidden; isolation: isolate; background-image: linear-gradient(180deg, rgba(5,7,10,0.08), rgba(5,7,10,0.54)), var(--pet-bg); background-size: cover; background-position: center; }
+        .pet-habitat-card::before { content: ""; position: absolute; inset: -16%; z-index: 0; background-image: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(15,23,42,0.16)), var(--pet-bg); background-size: 118% 118%; background-position: 40% 42%; transform: scale(1.12); animation: habitat-pan 7s ease-in-out infinite alternate; }
+        .pet-habitat-card::after { content: ""; position: absolute; inset: -18%; z-index: 1; pointer-events: none; background:
+                radial-gradient(circle at 14% 24%, var(--habitat-spark) 0 0.28rem, transparent 0.34rem),
+                radial-gradient(circle at 80% 16%, rgba(255,255,255,0.78) 0 0.24rem, transparent 0.32rem),
+                radial-gradient(circle at 62% 66%, var(--habitat-glow) 0 0.8rem, transparent 0.95rem),
+                radial-gradient(circle at 34% 84%, rgba(255,255,255,0.66) 0 0.22rem, transparent 0.3rem),
+                linear-gradient(112deg, transparent 18%, rgba(255,255,255,0.22) 42%, transparent 62%);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 220% 220%;
+            filter: blur(0.1px); opacity: 0.95; animation: habitat-sparkle 3.6s ease-in-out infinite alternate; }
         .pet-habitat-card > * { position: relative; z-index: 2; }
         .pet-habitat-cat { --pet-bg: url('assets/pet-backgrounds/cat-habitat.png'); --habitat-glow: rgba(129, 140, 248, 0.66); --habitat-spark: rgba(251, 191, 36, 0.85); }
         .pet-habitat-rabbit { --pet-bg: url('assets/pet-backgrounds/rabbit-habitat.png'); --habitat-glow: rgba(244, 114, 182, 0.56); --habitat-spark: rgba(255, 255, 255, 0.90); }
@@ -50,12 +57,23 @@
         .pet-habitat-dino { --pet-bg: url('assets/pet-backgrounds/dino-habitat.png'); --habitat-glow: rgba(168, 85, 247, 0.66); --habitat-spark: rgba(34, 211, 238, 0.85); }
         .pet-habitat-parrot { --pet-bg: url('assets/pet-backgrounds/parrot-habitat.png'); --habitat-glow: rgba(56, 189, 248, 0.60); --habitat-spark: rgba(251, 191, 36, 0.88); }
         .pet-habitat-goldfish { --pet-bg: url('assets/pet-backgrounds/goldfish-habitat.png'); --habitat-glow: rgba(34, 211, 238, 0.70); --habitat-spark: rgba(186, 230, 253, 0.90); }
-        .pet-habitat-goldfish::after { background: radial-gradient(circle at 20% 90%, rgba(255,255,255,0.72) 0 0.2rem, transparent 0.25rem), radial-gradient(circle at 42% 74%, rgba(186,230,253,0.80) 0 0.25rem, transparent 0.31rem), radial-gradient(circle at 68% 88%, rgba(255,255,255,0.60) 0 0.18rem, transparent 0.24rem), linear-gradient(100deg, transparent 28%, rgba(255,255,255,0.18) 46%, transparent 64%); animation: habitat-bubbles 4.8s linear infinite; }
-        .pet-habitat-parrot::after { background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.40) 36%, transparent 52%), radial-gradient(circle at 22% 26%, rgba(255,255,255,0.84) 0 0.22rem, transparent 0.28rem), radial-gradient(circle at 78% 70%, var(--habitat-spark) 0 0.2rem, transparent 0.26rem); animation: habitat-clouds 8s ease-in-out infinite alternate; }
-        @keyframes habitat-pan { 0% { transform: scale(1.04) translate3d(-1.2%, -0.8%, 0); } 100% { transform: scale(1.08) translate3d(1.4%, 1%, 0); } }
-        @keyframes habitat-sparkle { 0% { opacity: 0.62; transform: translate3d(-0.3rem, 0.2rem, 0); } 100% { opacity: 1; transform: translate3d(0.5rem, -0.4rem, 0); } }
-        @keyframes habitat-bubbles { 0% { transform: translateY(1.3rem); opacity: 0.55; } 100% { transform: translateY(-1.3rem); opacity: 1; } }
-        @keyframes habitat-clouds { 0% { transform: translateX(-0.8rem); opacity: 0.62; } 100% { transform: translateX(1rem); opacity: 0.95; } }
+        .pet-habitat-goldfish::after { background:
+                radial-gradient(circle at 18% 94%, rgba(255,255,255,0.76) 0 0.24rem, transparent 0.31rem),
+                radial-gradient(circle at 36% 78%, rgba(186,230,253,0.88) 0 0.32rem, transparent 0.4rem),
+                radial-gradient(circle at 68% 90%, rgba(255,255,255,0.64) 0 0.22rem, transparent 0.3rem),
+                radial-gradient(circle at 84% 74%, rgba(125,211,252,0.82) 0 0.28rem, transparent 0.36rem),
+                linear-gradient(100deg, transparent 24%, rgba(255,255,255,0.24) 46%, transparent 68%);
+            animation: habitat-bubbles 3.4s linear infinite; }
+        .pet-habitat-parrot::after { background:
+                linear-gradient(105deg, transparent 14%, rgba(255,255,255,0.48) 34%, transparent 56%),
+                radial-gradient(circle at 22% 26%, rgba(255,255,255,0.86) 0 0.24rem, transparent 0.31rem),
+                radial-gradient(circle at 78% 70%, var(--habitat-spark) 0 0.26rem, transparent 0.34rem),
+                radial-gradient(circle at 50% 14%, rgba(186,230,253,0.64) 0 0.7rem, transparent 0.9rem);
+            animation: habitat-clouds 5.5s ease-in-out infinite alternate; }
+        @keyframes habitat-pan { 0% { transform: scale(1.12) translate3d(-4.5%, -3%, 0); background-position: 34% 38%; } 100% { transform: scale(1.2) translate3d(4%, 3.5%, 0); background-position: 68% 58%; } }
+        @keyframes habitat-sparkle { 0% { opacity: 0.55; transform: translate3d(-1.2rem, 0.8rem, 0) scale(0.96); background-position: 0 0, 0 0, 0 0, 0 0, 0% 40%; } 100% { opacity: 1; transform: translate3d(1.2rem, -1rem, 0) scale(1.04); background-position: 0 0, 0 0, 0 0, 0 0, 100% 58%; } }
+        @keyframes habitat-bubbles { 0% { transform: translateY(2.4rem) translateX(-0.8rem); opacity: 0.28; } 45% { opacity: 1; } 100% { transform: translateY(-2.8rem) translateX(0.9rem); opacity: 0.86; } }
+        @keyframes habitat-clouds { 0% { transform: translateX(-2rem) translateY(0.4rem); opacity: 0.52; } 100% { transform: translateX(2.2rem) translateY(-0.6rem); opacity: 1; } }
 .dur-btn { cursor: pointer; z-index: 60; position: relative; transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
         .dur-btn.active { background: white; color: black; font-weight: 900; transform: scale(1.05); }
         .env-card { cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
@@ -74,9 +92,10 @@
         .teacher-note-text { color: #f8fafc; line-height: 1.55; overflow-wrap: anywhere; }
         .teacher-note-time { margin-top: 0.45rem; color: #fbbf24; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
         @media (min-width: 1024px) {
-            #view-focus > aside:first-child > .glass:first-child { min-height: clamp(300px, 42vh, 440px); padding: 1.25rem; }
-            #view-focus > aside:first-child > .glass:first-child .py-10 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
-            .pet-avatar-img { width: clamp(8rem, 11vw, 11rem); height: clamp(8rem, 11vw, 11rem); }
+            #view-focus > aside:first-child > .glass:first-child { min-height: clamp(330px, 45vh, 470px); padding: 1.25rem; }
+            #view-focus > aside:first-child > .glass:first-child .py-10 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+            .pet-body { --pet-size: clamp(11.8rem, 15vw, 12.8rem); }
+            .pet-avatar-img { width: clamp(11.8rem, 15vw, 12.8rem); height: clamp(11.8rem, 15vw, 12.8rem); }
             #teacherNotePanel { min-height: 190px; padding: 1.6rem; }
             #teacherNotePanel h3 { font-size: 0.78rem; margin-bottom: 1rem; }
             #privateFeedback { max-height: 215px; overflow-y: auto; font-size: 0.88rem; padding-right: 0.15rem; }
@@ -105,7 +124,8 @@
             #view-focus > main { gap: 0.75rem; }
             #view-focus .glass { padding: 1rem; }
             #view-focus aside:first-child .glass:first-child { min-height: 0; }
-            .pet-avatar-img { width: 7.5rem; height: 7.5rem; }
+            .pet-body { --pet-size: 9.4rem; }
+            .pet-avatar-img { width: 9.4rem; height: 9.4rem; }
             #petAvatar + *, #petNameDisp { font-size: 1.25rem; }
             #timerDisplay { font-size: clamp(4rem, 22vw, 6.25rem); margin: 4rem 0 1.5rem; }
             #timerBtn { width: 100%; padding: 1rem; letter-spacing: 0.12em; }
