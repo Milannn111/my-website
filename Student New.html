@@ -42,29 +42,31 @@
         @keyframes pet-fly-path { 0% { transform: translateX(calc(var(--travel-x) * -1)) translateY(0.1rem) rotate(-2deg); } 50% { transform: translateX(0) translateY(-1rem) rotate(1deg); } 100% { transform: translateX(var(--travel-x)) translateY(0.1rem) rotate(2deg); } }
         .pet-habitat-card {
             --pet-base: url('assets/pet-backgrounds/cat-base.png');
+            --pet-bg-sheet: url('assets/pet-background-sprites/cat-habitat-sheet.png');
             --pet-motion-layer: url('assets/pet-backgrounds/cat-motion.png');
             --travel-x: 1.1rem;
             --pet-ground-bottom: 3.6rem;
+            --pet-ground-scale: 1;
             overflow: hidden; isolation: isolate; background: #06101f;
         }
         .habitat-layer { position: absolute; inset: 0; pointer-events: none; }
-        .habitat-base { z-index: 0; background-image: linear-gradient(180deg, rgba(6,10,22,0.02), rgba(6,10,22,0.26)), var(--pet-base); background-size: cover; background-position: center; transform: scale(1.02); }
-        .habitat-motion { z-index: 1; background-image: var(--pet-motion-layer); background-size: cover; background-position: center; opacity: 0.92; animation: habitat-drift 7s ease-in-out infinite alternate; mix-blend-mode: screen; }
+        .habitat-base { z-index: 0; background-image: linear-gradient(180deg, rgba(6,10,22,0.02), rgba(6,10,22,0.24)), var(--pet-bg-sheet), var(--pet-base); background-size: 100% 100%, 400% 100%, cover; background-position: 0 0, 0 0, center; transform: scale(1.02); animation: habitat-sheet-frames 7.2s steps(4) infinite; }
+        .habitat-motion { z-index: 1; background-image: var(--pet-motion-layer); background-size: cover; background-position: center; opacity: 0.32; animation: habitat-drift 7s ease-in-out infinite alternate; mix-blend-mode: screen; }
         .pet-habitat-card > :not(.habitat-layer) { position: relative; z-index: 3; }
         .pet-habitat-card > .pet-info { position: absolute; top: 0.55rem; left: 1rem; right: 1rem; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 0.1rem; pointer-events: auto; }
         .pet-name-row { display: flex; align-items: center; justify-content: center; gap: 0.35rem; max-width: 100%; padding: 0.22rem 0.55rem; border-radius: 999px; background: rgba(5, 7, 14, 0.2); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
         #petNameDisp { max-width: min(100%, 14rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.95rem; line-height: 1.2; text-shadow: 0 2px 14px rgba(0,0,0,0.45); }
-        #petLevelDisp { font-size: 0.56rem; line-height: 1.2; text-shadow: 0 2px 12px rgba(0,0,0,0.55); }
+        #petLevelDisp { display: inline-flex; align-items: center; justify-content: center; padding: 0.24rem 0.62rem; border-radius: 999px; background: rgba(6, 10, 22, 0.48); border: 1px solid rgba(255,255,255,0.18); color: #eef2ff; font-size: 0.68rem; line-height: 1.2; letter-spacing: 0.12em; text-shadow: 0 2px 12px rgba(0,0,0,0.72); backdrop-filter: blur(10px); }
         .pet-habitat-card > .pet-stage { position: absolute; left: 0; right: 0; bottom: var(--pet-ground-bottom); height: 16.3rem; display: flex; align-items: flex-end; justify-content: center; z-index: 3; overflow: visible; pointer-events: none; }
-        .pet-stage::before { content: ""; position: absolute; left: 27%; right: 27%; bottom: 0.2rem; height: 0.85rem; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,0.26), rgba(0,0,0,0)); filter: blur(6px); z-index: 1; }
+        .pet-stage::before { content: ""; position: absolute; left: 27%; right: 27%; bottom: 0.15rem; height: 0.72rem; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,0.32), rgba(0,0,0,0)); filter: blur(6px); transform: scaleX(var(--pet-ground-scale)); z-index: 1; }
         .pet-stage-foreground { display: none; }
         #petAvatar { position: relative; z-index: 3; }
-        .pet-habitat-cat { --pet-base: url('assets/pet-backgrounds/cat-base.png'); --pet-motion-layer: url('assets/pet-backgrounds/cat-motion.png'); --travel-x: 1rem; --pet-ground-bottom: 3.55rem; }
-        .pet-habitat-rabbit { --pet-base: url('assets/pet-backgrounds/rabbit-base.png'); --pet-motion-layer: url('assets/pet-backgrounds/rabbit-motion.png'); --travel-x: 1rem; --pet-ground-bottom: 3.45rem; }
-        .pet-habitat-monkey { --pet-base: url('assets/pet-backgrounds/monkey-base.png'); --pet-motion-layer: url('assets/pet-backgrounds/monkey-motion.png'); --travel-x: 1.05rem; --pet-ground-bottom: 3.65rem; }
-        .pet-habitat-dino { --pet-base: url('assets/pet-backgrounds/dino-base.png'); --pet-motion-layer: url('assets/pet-backgrounds/dino-motion.png'); --travel-x: 0.85rem; --pet-ground-bottom: 3.35rem; }
-        .pet-habitat-parrot { --pet-base: url('assets/pet-backgrounds/parrot-base.png'); --pet-motion-layer: url('assets/pet-backgrounds/parrot-motion.png'); --travel-x: 1.2rem; --pet-ground-bottom: 5.1rem; }
-        .pet-habitat-goldfish { --pet-base: url('assets/pet-backgrounds/goldfish-base.png'); --pet-motion-layer: url('assets/pet-backgrounds/goldfish-motion.png'); --travel-x: 1.35rem; --pet-ground-bottom: 4.45rem; }
+        .pet-habitat-cat { --pet-base: url('assets/pet-backgrounds/cat-base.png'); --pet-bg-sheet: url('assets/pet-background-sprites/cat-habitat-sheet.png'); --pet-motion-layer: url('assets/pet-backgrounds/cat-motion.png'); --travel-x: 1rem; --pet-ground-bottom: 2.75rem; --pet-ground-scale: 1.1; }
+        .pet-habitat-rabbit { --pet-base: url('assets/pet-backgrounds/rabbit-base.png'); --pet-bg-sheet: url('assets/pet-background-sprites/rabbit-habitat-sheet.png'); --pet-motion-layer: url('assets/pet-backgrounds/rabbit-motion.png'); --travel-x: 1rem; --pet-ground-bottom: 2.65rem; --pet-ground-scale: 1.05; }
+        .pet-habitat-monkey { --pet-base: url('assets/pet-backgrounds/monkey-base.png'); --pet-bg-sheet: url('assets/pet-background-sprites/monkey-habitat-sheet.png'); --pet-motion-layer: url('assets/pet-backgrounds/monkey-motion.png'); --travel-x: 1.05rem; --pet-ground-bottom: 2.9rem; --pet-ground-scale: 1.08; }
+        .pet-habitat-dino { --pet-base: url('assets/pet-backgrounds/dino-base.png'); --pet-bg-sheet: url('assets/pet-background-sprites/dino-habitat-sheet.png'); --pet-motion-layer: url('assets/pet-backgrounds/dino-motion.png'); --travel-x: 0.85rem; --pet-ground-bottom: 2.45rem; --pet-ground-scale: 1.18; }
+        .pet-habitat-parrot { --pet-base: url('assets/pet-backgrounds/parrot-base.png'); --pet-bg-sheet: url('assets/pet-background-sprites/parrot-habitat-sheet.png'); --pet-motion-layer: url('assets/pet-backgrounds/parrot-motion.png'); --travel-x: 1.2rem; --pet-ground-bottom: 5.1rem; --pet-ground-scale: 0.9; }
+        .pet-habitat-goldfish { --pet-base: url('assets/pet-backgrounds/goldfish-base.png'); --pet-bg-sheet: url('assets/pet-background-sprites/goldfish-habitat-sheet.png'); --pet-motion-layer: url('assets/pet-backgrounds/goldfish-motion.png'); --travel-x: 1.35rem; --pet-ground-bottom: 4.45rem; --pet-ground-scale: 0.8; }
         .pet-habitat-monkey .habitat-motion,
         .pet-habitat-dino .habitat-motion {
             inset: 6% 34% 43% 34%;
@@ -86,7 +88,8 @@
         .pet-habitat-goldfish .pet-stage::before { display: none; }
         .pet-habitat-parrot .pet-stage { align-items: center; height: 15.6rem; }
         .pet-habitat-parrot .pet-stage::before { opacity: 0.14; bottom: 1.1rem; }
-        @keyframes habitat-drift { 0% { transform: translate3d(-0.8rem, 0.4rem, 0) scale(1.02); } 100% { transform: translate3d(0.8rem, -0.5rem, 0) scale(1.04); } }
+        @keyframes habitat-sheet-frames { 0% { background-position: 0 0, 0% 0, center; } 100% { background-position: 0 0, 100% 0, center; } }
+        @keyframes habitat-drift { 0% { transform: translate3d(-0.5rem, 0.25rem, 0) scale(1.02); } 100% { transform: translate3d(0.5rem, -0.25rem, 0) scale(1.03); } }
         @keyframes waterfall-flow { 0% { transform: translate3d(0, -0.45rem, 0) scale(1.01); opacity: 0.18; } 45% { opacity: 0.34; } 100% { transform: translate3d(0.03rem, 0.5rem, 0) scale(1.01); opacity: 0.22; } }
         @keyframes bubble-flow { 0% { transform: translate3d(-0.3rem, 2rem, 0) scale(1.02); opacity: 0.42; } 40% { opacity: 0.95; } 100% { transform: translate3d(0.45rem, -2.4rem, 0) scale(1.04); opacity: 0.74; } }
         @keyframes cloud-flow { 0% { transform: translate3d(-1.6rem, 0.3rem, 0) scale(1.02); } 100% { transform: translate3d(1.8rem, -0.3rem, 0) scale(1.04); } }
@@ -108,11 +111,11 @@
         .teacher-note-text { color: #f8fafc; line-height: 1.55; overflow-wrap: anywhere; }
         .teacher-note-time { margin-top: 0.45rem; color: #fbbf24; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
         @media (min-width: 1024px) {
-            #view-focus > aside:first-child > .glass:first-child { min-height: clamp(350px, 47vh, 490px); padding: 1.25rem; }
+            #view-focus > aside:first-child > .glass:first-child { min-height: clamp(370px, 50vh, 510px); padding: 1.25rem; }
             .pet-habitat-card > .pet-stage { height: clamp(15.2rem, 19vw, 16.4rem); }
             .pet-body { --pet-size: clamp(14.2rem, 18vw, 15.8rem); }
             .pet-avatar-img { width: var(--pet-size); height: var(--pet-size); }
-            #petHabitatCard .mt-8 { position: absolute; left: 1rem; right: 1rem; bottom: 1.35rem; z-index: 5; margin-top: 0; }
+            #petHabitatCard .mt-8 { position: absolute; left: 1rem; right: 1rem; bottom: 0.75rem; z-index: 5; margin-top: 0; }
             #teacherNotePanel { min-height: 190px; padding: 1.6rem; }
             #teacherNotePanel h3 { font-size: 0.78rem; margin-bottom: 1rem; }
             #privateFeedback { max-height: 215px; overflow-y: auto; font-size: 0.88rem; padding-right: 0.15rem; }
@@ -147,12 +150,13 @@
             .pet-avatar-img { width: var(--pet-size); height: var(--pet-size); }
             .pet-habitat-card > .pet-info { top: 0.85rem; left: 0.75rem; right: 0.75rem; }
             #petNameDisp { font-size: 1rem; max-width: min(100%, 15rem); }
-            #petLevelDisp { font-size: 0.65rem; }
-            #petHabitatCard .mt-8 { position: absolute; left: 0.9rem; right: 0.9rem; bottom: 1.1rem; z-index: 5; margin-top: 0; padding-left: 0.5rem; padding-right: 0.5rem; }
+            #petLevelDisp { font-size: 0.7rem; padding: 0.24rem 0.62rem; }
+            #petHabitatCard .mt-8 { position: absolute; left: 0.9rem; right: 0.9rem; bottom: 0.75rem; z-index: 5; margin-top: 0; padding-left: 0.5rem; padding-right: 0.5rem; }
             #timerDisplay { font-size: clamp(4rem, 22vw, 6.25rem); margin: 4rem 0 1.5rem; }
             #timerBtn { width: 100%; padding: 1rem; letter-spacing: 0.12em; }
             #view-focus main > .glass:first-child .absolute.top-6.left-8 { left: 1rem; right: 1rem; top: 1rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
             #view-focus main > .glass:first-child .absolute.top-6.right-8 { right: 1rem; top: 3.75rem; }
+            #timerActions { top: 3.75rem; right: 1rem; align-items: flex-end; }
             .dur-btn { padding-left: 0.5rem; padding-right: 0.5rem; }
             #missionContainer { max-height: none; overflow: visible; padding-right: 0; }
             .mission-card > .flex { flex-direction: column; }
@@ -244,7 +248,10 @@
                         <button onclick="setDuration(45, this)" class="dur-btn glass px-6 py-2 text-[10px] font-black uppercase">45 Min</button>
                         <button onclick="setDuration(60, this)" class="dur-btn glass px-6 py-2 text-[10px] font-black uppercase">60 Min</button>
                     </div>
-                    <button onclick="quickWarp()" class="absolute top-6 right-8 text-[9px] font-black text-indigo-400 hover:text-white transition uppercase tracking-widest"><i class="fas fa-bolt-lightning"></i> Quick Warp</button>
+                    <div id="timerActions" class="absolute top-6 right-8 z-[60] flex flex-col items-end gap-2">
+                        <button onclick="quickWarp()" class="text-[9px] font-black text-indigo-400 hover:text-white transition uppercase tracking-widest"><i class="fas fa-bolt-lightning"></i> Quick Warp</button>
+                        <button onclick="grantDemoApples()" class="bg-emerald-500/15 border border-emerald-300/25 text-emerald-200 hover:bg-emerald-500/25 hover:text-white px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition"><i class="fas fa-flask mr-1"></i> Demo +100 Apples</button>
+                    </div>
                     <div id="timerDisplay" class="text-[10rem] font-black tracking-tighter leading-none my-8 drop-shadow-2xl">25:00</div>
                     <button id="timerBtn" onclick="toggleTimer()" class="bg-white text-slate-950 px-20 py-5 rounded-2xl font-black tracking-[0.3em] text-sm hover:scale-105 transition shadow-2xl uppercase">Initialize Focus</button>
                 </div>
@@ -1346,6 +1353,14 @@
         function quickWarp() {
             if (!state.isRunning) toggleTimer();
             state.timeRem = 1;
+        }
+
+        function grantDemoApples() {
+            if (!state.user) return alert("Login first.");
+            state.user.apple = Math.max(0, toNumber(state.user.apple, 0)) + 100;
+            cacheStudent(state.user);
+            render();
+            saveData().catch(console.error);
         }
 
         function finishFocus() {
