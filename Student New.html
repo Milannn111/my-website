@@ -10,11 +10,16 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --glass: rgba(255, 255, 255, 0.08); }
+        html { min-height: 100%; background: #05070a; }
         body {
             margin: 0; padding: 0; min-height: 100vh; font-family: Inter, system-ui, sans-serif;
             background: #05070a url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2560') no-repeat center center fixed;
-            background-size: cover; color: #fff; overflow: hidden; transition: background 1s ease;
+            background-size: cover; color: #fff; overflow-x: hidden; overflow-y: auto; transition: background 1s ease;
         }
+        #app { min-height: 100dvh; height: auto !important; overflow: visible !important; }
+        #view-focus { overflow: visible; align-items: flex-start; }
+        #view-focus > aside, #view-focus > main { min-height: 0; }
+        #view-focus > main { min-width: 0; }
         .glass { background: var(--glass); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .nav-link { cursor: pointer; opacity: 0.5; transition: 0.3s; position: relative; z-index: 100; }
@@ -137,12 +142,12 @@
             .pet-body { --pet-size: clamp(14.2rem, 18vw, 15.8rem); }
             .pet-avatar-img { width: var(--pet-size); height: var(--pet-size); }
             #petHabitatCard .mt-8 { position: absolute; left: 1rem; right: 1rem; bottom: 0.75rem; z-index: 5; margin-top: 0; }
-            #teacherNotePanel { min-height: 190px; padding: 1.6rem; }
+            #teacherNotePanel { min-height: 190px; padding: 1.6rem; overflow: visible; }
             #teacherNotePanel h3 { font-size: 0.78rem; margin-bottom: 1rem; }
-            #privateFeedback { max-height: 215px; overflow-y: auto; font-size: 0.88rem; padding-right: 0.15rem; }
-            #skillDirectivesPanel { padding: 2.25rem; }
+            #privateFeedback { max-height: none; overflow: visible; font-size: 0.88rem; padding-right: 0.15rem; }
+            #skillDirectivesPanel { min-height: min(34rem, calc(100dvh - 11rem)); padding: 2.25rem; overflow: visible; }
             #skillDirectivesPanel > h3 { font-size: 0.95rem; margin-bottom: 1.75rem; }
-            #missionContainer { padding-right: 0.35rem; }
+            #missionContainer { max-height: none; overflow: visible; padding-right: 0.35rem; padding-bottom: 1rem; }
             .mission-card { padding: 1.55rem; }
             .mission-card .mission-title { font-size: 1rem; line-height: 1.4; }
             .mission-card p { line-height: 1.45; }
