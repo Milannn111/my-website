@@ -27,7 +27,7 @@
         .pet-motion-walk { animation: pet-walk-path 4.8s ease-in-out infinite alternate; }
         .pet-motion-swim { animation: pet-swim-path 5.2s ease-in-out infinite alternate; }
         .pet-motion-fly { animation: pet-fly-path 4.4s ease-in-out infinite alternate; }
-        .pet-sprite-window { width: 100%; height: 100%; overflow: hidden; position: relative; transform: scale(1.08); transform-origin: center; }
+        .pet-sprite-window { width: 100%; height: 100%; overflow: hidden; position: relative; transform: translateY(var(--pet-foot-drop, 0)) scale(1.08); transform-origin: center; }
         .pet-sprite-sheet { width: 400%; height: 100%; max-width: none; display: block; object-fit: fill; animation: pet-sprite-frames 0.72s step-end infinite; will-change: transform; }
         .pet-sprite-fallback { width: 100%; height: 100%; object-fit: contain; margin: 0 auto; }
         .pet-sprite-window .pet-sprite-fallback { display: none; }
@@ -42,57 +42,65 @@
         @keyframes pet-fly-path { 0% { transform: translateX(calc(var(--travel-x) * -1)) translateY(0.1rem) rotate(-2deg); } 50% { transform: translateX(0) translateY(-1rem) rotate(1deg); } 100% { transform: translateX(var(--travel-x)) translateY(0.1rem) rotate(2deg); } }
         .pet-habitat-card {
             --pet-base: url('assets/pet-backgrounds/cat-base.png');
-            --pet-bg-sheet: url('assets/pet-background-sprites/cat-habitat-sheet.png');
-            --pet-motion-layer: url('assets/pet-backgrounds/cat-motion.png');
+            --pet-motion-layer: none;
+            --pet-detail-layer: none;
+            --pet-foreground-layer: none;
+            --pet-motion-animation: none;
+            --pet-detail-animation: none;
+            --pet-foreground-animation: none;
+            --pet-motion-origin: center;
+            --pet-detail-origin: center;
+            --pet-foreground-origin: center;
+            --pet-foot-drop: 1.55rem;
             --travel-x: 1.1rem;
             --pet-ground-bottom: 3.6rem;
             --pet-ground-scale: 1;
             overflow: hidden; isolation: isolate; background: #06101f;
         }
         .habitat-layer { position: absolute; inset: 0; pointer-events: none; }
-        .habitat-base { z-index: 0; background-image: linear-gradient(180deg, rgba(6,10,22,0.02), rgba(6,10,22,0.24)), var(--pet-bg-sheet), var(--pet-base); background-size: 100% 100%, 800% 100%, cover; background-position: 0 0, 0 0, center; transform: scale(1.02); animation: habitat-sheet-frames 8.8s steps(8) infinite; }
-        .habitat-motion { display: none; }
+        .habitat-base { z-index: 0; background-image: linear-gradient(180deg, rgba(6,10,22,0.02), rgba(6,10,22,0.24)), var(--pet-base); background-size: 100% 100%, cover; background-position: 0 0, center; transform: scale(1.02); }
+        .habitat-motion, .habitat-detail, .habitat-foreground { display: none; }
         .pet-habitat-card > :not(.habitat-layer) { position: relative; z-index: 3; }
-        .pet-habitat-card > .pet-info { position: absolute; top: 0.55rem; left: 1rem; right: 1rem; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 0.1rem; pointer-events: auto; }
+        .pet-habitat-card > .pet-info { position: absolute; top: 0.55rem; left: 1rem; right: 1rem; z-index: 6; display: flex; flex-direction: column; align-items: center; gap: 0.1rem; pointer-events: auto; }
         .pet-name-row { display: flex; align-items: center; justify-content: center; gap: 0.35rem; max-width: 100%; padding: 0.22rem 0.55rem; border-radius: 999px; background: rgba(5, 7, 14, 0.2); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
         #petNameDisp { max-width: min(100%, 14rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.95rem; line-height: 1.2; text-shadow: 0 2px 14px rgba(0,0,0,0.45); }
         #petLevelDisp { display: inline-flex; align-items: center; justify-content: center; padding: 0.24rem 0.62rem; border-radius: 999px; background: rgba(6, 10, 22, 0.48); border: 1px solid rgba(255,255,255,0.18); color: #eef2ff; font-size: 0.68rem; line-height: 1.2; letter-spacing: 0.12em; text-shadow: 0 2px 12px rgba(0,0,0,0.72); backdrop-filter: blur(10px); }
         .pet-habitat-card > .pet-stage { position: absolute; left: 0; right: 0; bottom: var(--pet-ground-bottom); height: 16.3rem; display: flex; align-items: flex-end; justify-content: center; z-index: 3; overflow: visible; pointer-events: none; }
-        .pet-stage::before { content: ""; position: absolute; left: 27%; right: 27%; bottom: 0.15rem; height: 0.72rem; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,0.32), rgba(0,0,0,0)); filter: blur(6px); transform: scaleX(var(--pet-ground-scale)); z-index: 1; }
+        .pet-stage::before { content: ""; position: absolute; left: 34%; right: 34%; bottom: 0.42rem; height: 0.48rem; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,0.2), rgba(0,0,0,0)); filter: blur(7px); transform: scaleX(var(--pet-ground-scale)); z-index: 1; }
         .pet-stage-foreground { display: none; }
         #petAvatar { position: relative; z-index: 3; }
-        .pet-habitat-cat { --pet-base: url('assets/pet-backgrounds/cat-base.png'); --pet-bg-sheet: url('assets/pet-background-sprites/cat-habitat-sheet.png'); --pet-motion-layer: url('assets/pet-backgrounds/cat-motion.png'); --travel-x: 1rem; --pet-ground-bottom: 2.75rem; --pet-ground-scale: 1.1; }
-        .pet-habitat-rabbit { --pet-base: url('assets/pet-backgrounds/rabbit-base.png'); --pet-bg-sheet: url('assets/pet-background-sprites/rabbit-habitat-sheet.png'); --pet-motion-layer: url('assets/pet-backgrounds/rabbit-motion.png'); --travel-x: 1rem; --pet-ground-bottom: 2.65rem; --pet-ground-scale: 1.05; }
-        .pet-habitat-monkey { --pet-base: url('assets/pet-backgrounds/monkey-base.png'); --pet-bg-sheet: url('assets/pet-background-sprites/monkey-habitat-sheet.png'); --pet-motion-layer: url('assets/pet-backgrounds/monkey-motion.png'); --travel-x: 1.05rem; --pet-ground-bottom: 2.9rem; --pet-ground-scale: 1.08; }
-        .pet-habitat-dino { --pet-base: url('assets/pet-backgrounds/dino-base.png'); --pet-bg-sheet: url('assets/pet-background-sprites/dino-habitat-sheet.png'); --pet-motion-layer: url('assets/pet-backgrounds/dino-motion.png'); --travel-x: 0.85rem; --pet-ground-bottom: 2.45rem; --pet-ground-scale: 1.18; }
-        .pet-habitat-parrot { --pet-base: url('assets/pet-backgrounds/parrot-base.png'); --pet-bg-sheet: url('assets/pet-background-sprites/parrot-habitat-sheet.png'); --pet-motion-layer: url('assets/pet-backgrounds/parrot-motion.png'); --travel-x: 1.2rem; --pet-ground-bottom: 5.1rem; --pet-ground-scale: 0.9; }
-        .pet-habitat-goldfish { --pet-base: url('assets/pet-backgrounds/goldfish-base.png'); --pet-bg-sheet: url('assets/pet-background-sprites/goldfish-habitat-sheet.png'); --pet-motion-layer: url('assets/pet-backgrounds/goldfish-motion.png'); --travel-x: 1.35rem; --pet-ground-bottom: 4.45rem; --pet-ground-scale: 0.8; }
-        .pet-habitat-monkey .habitat-motion,
-        .pet-habitat-dino .habitat-motion {
-            inset: 6% 34% 43% 34%;
-            border-radius: 999px;
-            background-size: 320% 235%;
-            background-position: center 22%;
-            animation: waterfall-flow 1.6s linear infinite;
-            opacity: 0.34;
-            mix-blend-mode: normal;
-            filter: blur(0.35px) saturate(0.85);
-            -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 72%, transparent 100%);
-            mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 72%, transparent 100%);
-        }
-        .pet-habitat-monkey .habitat-motion { inset: 7% 35% 44% 35%; background-size: 335% 245%; background-position: center 20%; opacity: 0.3; }
-        .pet-habitat-dino .habitat-motion { inset: 7% 36% 45% 36%; background-size: 350% 250%; background-position: center 18%; opacity: 0.28; }
-        .pet-habitat-goldfish .habitat-motion { animation: bubble-flow 3.2s linear infinite; opacity: 0.9; }
-        .pet-habitat-parrot .habitat-motion { animation: cloud-flow 6s ease-in-out infinite alternate; opacity: 0.82; }
+        .pet-habitat-cat { --pet-base: url('assets/pet-backgrounds/cat-base.png'); --travel-x: 1rem; --pet-ground-bottom: 2.75rem; --pet-ground-scale: 1.1; }
+        .pet-habitat-rabbit { --pet-base: url('assets/pet-backgrounds/rabbit-base.png'); --travel-x: 1rem; --pet-ground-bottom: 2.55rem; --pet-ground-scale: 1.05; }
+        .pet-habitat-monkey { --pet-base: url('assets/pet-backgrounds/monkey-base.png'); --travel-x: 1.05rem; --pet-ground-bottom: 2.05rem; --pet-foot-drop: 2.35rem; --pet-ground-scale: 1.08; }
+        .pet-habitat-dino { --pet-base: url('assets/pet-backgrounds/dino-base.png'); --travel-x: 0.85rem; --pet-ground-bottom: 2.35rem; --pet-ground-scale: 1.18; }
+        .pet-habitat-card[data-pet-kind="cat"][data-pet-stage-key="final"],
+        .pet-habitat-card[data-pet-kind="dino"][data-pet-stage-key="final"] { --pet-foot-drop: 2.35rem; }
+        .pet-habitat-card[data-pet-kind="rabbit"][data-pet-stage-key="hatchling"] { --pet-ground-bottom: 2.8rem; --pet-foot-drop: 1.25rem; }
+        .pet-habitat-card[data-pet-kind="rabbit"][data-pet-stage-key="growing"],
+        .pet-habitat-card[data-pet-kind="rabbit"][data-pet-stage-key="mature"],
+        .pet-habitat-card[data-pet-kind="rabbit"][data-pet-stage-key="final"] { --pet-ground-bottom: 2.25rem; --pet-foot-drop: 2.2rem; }
+        .pet-habitat-card[data-pet-kind="monkey"][data-pet-stage-key="hatchling"] { --pet-ground-bottom: 2.55rem; --pet-foot-drop: 1.35rem; }
+        .pet-habitat-card[data-pet-kind="monkey"][data-pet-stage-key="growing"],
+        .pet-habitat-card[data-pet-kind="monkey"][data-pet-stage-key="mature"] { --pet-ground-bottom: 1.9rem; --pet-foot-drop: 2.2rem; }
+        .pet-habitat-card[data-pet-kind="monkey"][data-pet-stage-key="final"] { --pet-ground-bottom: 2.05rem; --pet-foot-drop: 2.35rem; --pet-ground-scale: 1.15; }
+        .pet-habitat-parrot { --pet-base: url('assets/pet-backgrounds/parrot-base.png'); --pet-foot-drop: 0; --travel-x: 1.2rem; --pet-ground-bottom: 5.1rem; --pet-ground-scale: 0.9; }
+        .pet-habitat-goldfish { --pet-base: url('assets/pet-backgrounds/goldfish-base.png'); --pet-foot-drop: 0; --travel-x: 1.35rem; --pet-ground-bottom: 4.45rem; --pet-ground-scale: 0.8; }
         .pet-habitat-goldfish .pet-stage { align-items: center; height: 16rem; }
         .pet-habitat-goldfish .pet-stage::before { display: none; }
         .pet-habitat-parrot .pet-stage { align-items: center; height: 15.6rem; }
         .pet-habitat-parrot .pet-stage::before { opacity: 0.14; bottom: 1.1rem; }
-        @keyframes habitat-sheet-frames { 0% { background-position: 0 0, 0% 0, center; } 100% { background-position: 0 0, 100% 0, center; } }
-        @keyframes habitat-drift { 0% { transform: translate3d(-0.5rem, 0.25rem, 0) scale(1.02); } 100% { transform: translate3d(0.5rem, -0.25rem, 0) scale(1.03); } }
-        @keyframes waterfall-flow { 0% { transform: translate3d(0, -0.45rem, 0) scale(1.01); opacity: 0.18; } 45% { opacity: 0.34; } 100% { transform: translate3d(0.03rem, 0.5rem, 0) scale(1.01); opacity: 0.22; } }
-        @keyframes bubble-flow { 0% { transform: translate3d(-0.3rem, 2rem, 0) scale(1.02); opacity: 0.42; } 40% { opacity: 0.95; } 100% { transform: translate3d(0.45rem, -2.4rem, 0) scale(1.04); opacity: 0.74; } }
-        @keyframes cloud-flow { 0% { transform: translate3d(-1.6rem, 0.3rem, 0) scale(1.02); } 100% { transform: translate3d(1.8rem, -0.3rem, 0) scale(1.04); } }
+        @keyframes habitat-sway-soft { 0% { transform: translate3d(-0.25%, 0.15%, 0) rotate(-0.45deg); } 100% { transform: translate3d(0.3%, -0.12%, 0) rotate(0.55deg); } }
+        @keyframes habitat-sway-slow { 0% { transform: translate3d(-0.2%, 0.1%, 0) rotate(-0.28deg); } 100% { transform: translate3d(0.22%, -0.08%, 0) rotate(0.32deg); } }
+        @keyframes habitat-curtain { 0% { transform: translate3d(-0.15%, 0, 0) rotate(-0.22deg); } 100% { transform: translate3d(0.22%, 0.08%, 0) rotate(0.32deg); } }
+        @keyframes habitat-cloud-high { 0% { transform: translate3d(-2.4%, 0, 0); } 100% { transform: translate3d(2.6%, -0.15%, 0); } }
+        @keyframes habitat-cloud-low { 0% { transform: translate3d(2.2%, 0.1%, 0); } 100% { transform: translate3d(-2.8%, -0.05%, 0); } }
+        @keyframes habitat-bubble-rise { 0% { transform: translate3d(-0.3%, 2.2%, 0); opacity: 0.24; } 35% { opacity: 0.58; } 100% { transform: translate3d(0.35%, -2.4%, 0); opacity: 0.2; } }
+        @keyframes habitat-coral-left { 0% { transform: rotate(-0.55deg) translate3d(-0.1%, 0, 0); } 100% { transform: rotate(0.65deg) translate3d(0.12%, -0.05%, 0); } }
+        @keyframes habitat-coral-right { 0% { transform: rotate(0.45deg) translate3d(0.12%, 0, 0); } 100% { transform: rotate(-0.6deg) translate3d(-0.12%, -0.05%, 0); } }
+        @keyframes habitat-ring-swing { 0%, 100% { transform: rotate(-4.5deg); } 50% { transform: rotate(4.5deg); } }
+        @media (prefers-reduced-motion: reduce) {
+            .habitat-motion, .habitat-detail, .habitat-foreground { animation: none !important; transform: none !important; }
+        }
 .dur-btn { cursor: pointer; z-index: 60; position: relative; transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
         .dur-btn.active { background: white; color: black; font-weight: 900; transform: scale(1.05); }
         .env-card { cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
@@ -103,7 +111,20 @@
         .mission-card.submitted { background: rgba(16, 185, 129, 0.2); border-color: #10b981; }
         .mission-card.approved { background: rgba(16, 185, 129, 0.16); border-color: #34d399; }
         .progress-fill { transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .resonance-card { animation: fadeInUp 0.5s ease-out; }
+        .resonance-card { animation: fadeInUp 0.5s ease-out; overflow: hidden; }
+        .resonance-avatar {
+            width: 5rem; height: 5rem; flex: 0 0 5rem; display: flex; align-items: center; justify-content: center;
+            border-radius: 1.25rem; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+        }
+        .resonance-avatar img { width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 0 18px rgba(255,255,255,0.22)); }
+        .resonance-avatar span { font-size: 2.6rem; line-height: 1; }
+        .resonance-comment-avatar {
+            width: 2.25rem; height: 2.25rem; flex: 0 0 2.25rem; display: flex; align-items: center; justify-content: center;
+            border-radius: 0.75rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+        }
+        .resonance-comment-avatar img { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .resonance-comment-avatar span { font-size: 1.35rem; line-height: 1; }
+        .resonance-text { overflow-wrap: anywhere; word-break: break-word; }
         .hidden-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; clip-path: inset(50%); }
         #privateFeedback { display: flex; flex-direction: column; gap: 0.65rem; }
         .teacher-note-empty { color: #cbd5e1; font-style: italic; line-height: 1.6; }
@@ -166,7 +187,8 @@
             #view-resonance h2 { font-size: 2rem; }
             #beaconFeed { overflow: visible; padding-right: 0; padding-bottom: 2rem; }
             .resonance-card { flex-direction: column; gap: 1rem; padding: 1rem; }
-            .resonance-card > .text-6xl { font-size: 2.5rem; padding: 0; }
+            .resonance-avatar { width: 4.25rem; height: 4.25rem; flex-basis: 4.25rem; border-radius: 1rem; }
+            .resonance-avatar span { font-size: 2.25rem; }
             .resonance-card .flex.justify-between.mb-4 { flex-direction: column; gap: 0.5rem; }
             .resonance-card .flex.gap-3 { flex-direction: column; }
             .resonance-card input, .resonance-card button { width: 100%; }
@@ -209,6 +231,8 @@
                 <div id="petHabitatCard" class="glass pet-habitat-card pet-habitat-cat p-6 text-center relative flex flex-col justify-start min-h-[440px]">
                     <div class="habitat-layer habitat-base" aria-hidden="true"></div>
                     <div class="habitat-layer habitat-motion" aria-hidden="true"></div>
+                    <div class="habitat-layer habitat-detail" aria-hidden="true"></div>
+                    <div class="habitat-layer habitat-foreground" aria-hidden="true"></div>
                     <div id="evolutionTag" class="hidden">Neural Sync</div>
                     <div class="pet-info">
                         <div class="pet-name-row">
@@ -544,6 +568,17 @@
         const formatTime = (value) => value ? new Date(value).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
         const commentTime = (value) => value ? formatTime(value) : "";
         const PRIVATE_NOTE_LIMIT = 5;
+        const isImagePath = (value) => /^(https?:\/\/|data:image\/|blob:|assets\/|\.?\/)/i.test(value) && /\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(value);
+        function squareAvatarValue(value) {
+            if (value && typeof value === "object") return String(value.src || value.url || value.avatar || value.label || "").trim();
+            return String(value || "").trim();
+        }
+        function squareAvatarMarkup(value, size = "large") {
+            const raw = squareAvatarValue(value);
+            const className = size === "small" ? "resonance-comment-avatar" : "resonance-avatar";
+            if (raw && isImagePath(raw)) return `<div class="${className}"><img src="${escapeHtml(raw)}" alt=""></div>`;
+            return `<div class="${className}"><span>${raw ? escapeHtml(raw) : "&#10024;"}</span></div>`;
+        }
 
         function normalizeTeacherNotes(notes) {
             return (Array.isArray(notes) ? notes : [])
@@ -562,7 +597,10 @@
             if (!raw || raw === "Stay sharp." || raw === "Neural link established.") return [];
             try {
                 const parsed = JSON.parse(raw);
-                const list = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.notes) ? parsed.notes : null;
+                const list = Array.isArray(parsed) ? parsed
+                    : Array.isArray(parsed?.notes) ? parsed.notes
+                    : parsed && typeof parsed === "object" && typeof parsed.text === "string" ? [parsed]
+                    : null;
                 if (list) return normalizeTeacherNotes(list);
             } catch {
                 // Plain legacy feedback is shown as a single private note.
@@ -895,6 +933,8 @@
             const pet = petForms[stage] ? stage : "cat";
             const evo = getEvolutionStage(feedCount);
             const stageKey = evolutionStageKeys[Math.min(evo.index, evolutionStageKeys.length - 1)];
+            if (pet === "rabbit" && stageKey === "final") return "assets/pet-sprites/rabbit-final-grounded-sheet.png";
+            if (pet === "monkey" && stageKey === "final") return "assets/pet-sprites/monkey-final-grounded-sheet.png";
             return `assets/pet-sprites/${pet}-${stageKey}-sheet.png`;
         }
 
@@ -906,11 +946,13 @@
             return "pet-motion-walk";
         }
 
-        function applyPetHabitat(stage) {
+        function applyPetHabitat(stage, stageKey = "egg") {
             const card = document.getElementById("petHabitatCard");
             if (!card) return;
             Object.values(petHabitatClasses).forEach(className => card.classList.remove(className));
             card.classList.add(petHabitatClasses[stage] || petHabitatClasses.cat);
+            card.dataset.petKind = petForms[stage] ? stage : "cat";
+            card.dataset.petStageKey = stageKey;
         }
 
         function normalizeTasks(tasks, submissions = []) {
@@ -1135,7 +1177,8 @@
             const evoProgress = getEvolutionProgress(feedCount);
             const petName = (state.user.petName || "").trim() || "Guardian";
 
-            applyPetHabitat(sp);
+            const stageKey = evolutionStageKeys[Math.min(getEvolutionStage(feedCount).index, evolutionStageKeys.length - 1)];
+            applyPetHabitat(sp, stageKey);
             state.user.avatar = form.src;
             document.getElementById("petAvatar").innerHTML = `
                 <div class="pet-motion ${motionClass}">
@@ -1443,12 +1486,10 @@
             const comments = Array.isArray(arguments[4]?.comments) ? arguments[4].comments : [];
             const liked = likes.some(name => String(name).toLowerCase() === String(state.user?.username || "").toLowerCase());
             const canDeletePost = String(user || "").trim().toLowerCase() === String(state.user?.username || "").trim().toLowerCase();
-            const avatarMarkup = String(av || "").startsWith("http")
-                ? `<img class="w-16 h-16 object-contain" src="${escapeHtml(av)}" alt="">`
-                : escapeHtml(av || "✨");
+            const avatarMarkup = squareAvatarMarkup(av);
             div.className = "glass p-10 resonance-card flex gap-10 items-start";
             div.innerHTML = `
-                <div class="text-6xl py-2">${avatarMarkup}</div>
+                ${avatarMarkup}
                 <div class="flex-grow min-w-0">
                     <div class="flex justify-between gap-3 mb-4">
                         <span class="text-[11px] font-black text-indigo-400 uppercase">${escapeHtml(user)}</span>
@@ -1458,7 +1499,7 @@
                             ${canDeletePost ? `<button onclick="deleteSquarePost('${escapeHtml(postId)}')" title="Delete post" class="w-7 h-7 rounded-full border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:bg-rose-500/30 transition"><i class="fas fa-trash text-[10px]"></i></button>` : ""}
                         </span>
                     </div>
-                    <p class="text-xl text-slate-100 italic leading-relaxed mb-6">"${escapeHtml(txt)}"</p>
+                    <p class="resonance-text text-xl text-slate-100 italic leading-relaxed mb-6">"${escapeHtml(txt)}"</p>
                     <div class="flex flex-wrap items-center gap-3 mb-5">
                         <button onclick="togglePostLike('${escapeHtml(postId)}', this)" class="${liked ? "bg-pink-500 text-white" : "bg-white/5 text-slate-300"} px-4 py-2 rounded-xl text-[10px] font-black uppercase border border-white/10 hover:bg-pink-500 hover:text-white transition">
                             <i class="fas fa-heart mr-2"></i><span class="like-count">${likes.length}</span>
@@ -1467,13 +1508,11 @@
                     </div>
                     <div class="space-y-3 mb-5">
                         ${comments.map((comment, commentIndex) => {
-                            const commentAvatar = String(comment.avatar || "").startsWith("http")
-                                ? `<img class="w-8 h-8 object-contain" src="${escapeHtml(comment.avatar)}" alt="">`
-                                : `<span class="text-2xl">${escapeHtml(comment.avatar || "✨")}</span>`;
+                            const commentAvatar = squareAvatarMarkup(comment.avatar, "small");
                             const timeText = comment.createdAt || comment.created_at || comment.timestamp;
                             const canDelete = String(comment.username || "").trim().toLowerCase() === String(state.user?.username || "").trim().toLowerCase();
                             return `<div class="bg-white/5 border border-white/10 rounded-xl p-3 flex gap-3 items-start">
-                                <div class="shrink-0">${commentAvatar}</div>
+                                ${commentAvatar}
                                 <div class="flex-grow min-w-0">
                                     <div class="flex flex-wrap items-center justify-between gap-2">
                                         <div class="flex flex-wrap items-center gap-2">
@@ -1482,7 +1521,7 @@
                                         </div>
                                         ${canDelete ? `<button onclick="deletePostComment('${escapeHtml(postId)}', '${escapeHtml(comment.id || "")}', ${commentIndex})" title="Delete comment" class="w-7 h-7 rounded-full border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:bg-rose-500/30 transition"><i class="fas fa-trash text-[10px]"></i></button>` : ""}
                                     </div>
-                                    <p class="text-sm text-slate-200 mt-1">${escapeHtml(comment.text || "")}</p>
+                                    <p class="resonance-text text-sm text-slate-200 mt-1">${escapeHtml(comment.text || "")}</p>
                                 </div>
                             </div>`;
                         }).join("")}

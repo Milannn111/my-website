@@ -184,7 +184,10 @@
             if (!raw || raw === "Stay sharp." || raw === "Neural link established.") return [];
             try {
                 const parsed = JSON.parse(raw);
-                const list = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.notes) ? parsed.notes : null;
+                const list = Array.isArray(parsed) ? parsed
+                    : Array.isArray(parsed?.notes) ? parsed.notes
+                    : parsed && typeof parsed === "object" && typeof parsed.text === "string" ? [parsed]
+                    : null;
                 if (list) return normalizeTeacherNotes(list);
             } catch {
                 // Plain legacy feedback is kept visible as one private note.
