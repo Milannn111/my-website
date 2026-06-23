@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPet Mythic | Student Demo</title>
+    <style>
+        :root {
+            --bg: #05070a;
+            --panel: rgba(9, 13, 28, 0.82);
+            --line: rgba(255,255,255,0.14);
+            --text: #f8fafc;
+            --muted: #9aa7bd;
+            --cyan: #38e8ff;
+            --mint: #5cffb1;
+            --violet: #8b5cf6;
+            --amber: #fbbf24;
+            --rose: #fb7185;
+        }
+        * { box-sizing: border-box; }
+        html { min-height: 100%; background: var(--bg); }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at 15% 5%, rgba(56,232,255,0.16), transparent 34rem),
+                        radial-gradient(circle at 82% 95%, rgba(139,92,246,0.24), transparent 34rem),
+                        #05070a;
+            overflow-x: hidden;
+        }
+        button, input, textarea { font: inherit; }
+        button { border: 0; color: inherit; cursor: pointer; }
+        .shell { min-height: 100vh; padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+        .glass, .topbar {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: 0 22px 80px rgba(0,0,0,0.28);
+            backdrop-filter: blur(22px);
+        }
+        .topbar {
+            min-height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 14px 20px;
+            position: sticky;
+            top: 12px;
+            z-index: 30;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .mark {
+            width: 44px; height: 44px; border-radius: 14px;
+            display: grid; place-items: center;
+            color: #07111f; font-weight: 1000;
+            background: linear-gradient(135deg, var(--cyan), var(--violet));
+            box-shadow: 0 0 34px rgba(56,232,255,0.38);
+        }
+        h1, h2, h3, p { margin: 0; }
+        h1 { font-size: clamp(1rem, 2.4vw, 1.35rem); text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
+        h2, h3 { line-height: 1.2; }
+        .subtle { color: var(--muted); font-size: 0.76rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; }
+        .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+        .btn, .ghost, .food-btn, .answer-btn, .chip {
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.16);
+            background: rgba(255,255,255,0.07);
+            padding: 0.78rem 1rem;
+            font-size: 0.72rem;
+            font-weight: 1000;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        }
+        .btn {
+            background: linear-gradient(135deg, #f8fafc, #c7d2fe);
+            color: #08111f;
+            border-color: transparent;
+            box-shadow: 0 0 28px rgba(199,210,254,0.35);
+        }
+        .btn:hover, .ghost:hover, .food-btn:hover, .chip:hover { transform: translateY(-2px); border-color: rgba(56,232,255,0.55); }
+        .btn:disabled, .ghost:disabled {
+            cursor: not-allowed;
+            opacity: 0.48;
+            transform: none;
+            box-shadow: none;
+        }
+        .layout { display: grid; grid-template-columns: minmax(250px,0.92fr) minmax(360px,1.5fr) minmax(260px,0.95fr); gap: 16px; align-items: start; }
+        .panel { padding: 20px; position: relative; overflow: hidden; }
+        .title-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+        .title-row h2, .title-row h3 { font-size: 0.86rem; letter-spacing: 0.18em; text-transform: uppercase; }
+        .pet-card {
+            min-height: 426px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-image: linear-gradient(180deg, rgba(5,7,10,0.08), rgba(5,7,10,0.5)), var(--pet-bg, url("assets/pet-backgrounds/rabbit-base.png"));
+            background-size: cover;
+            background-position: center;
+        }
+        .pet-line { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            border-radius: 999px; padding: 0.42rem 0.8rem;
+            background: rgba(5,7,14,0.55);
+            border: 1px solid rgba(255,255,255,0.18);
+            font-weight: 1000; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em;
+        }
+        .pet-stage { height: 270px; display: grid; place-items: end center; position: relative; }
+        .pet-stage::after {
+            content: ""; width: 54%; height: 14px; border-radius: 999px;
+            background: radial-gradient(ellipse, rgba(0,0,0,0.28), transparent 70%);
+            filter: blur(8px); position: absolute; bottom: 20px;
+        }
+        .pet-img {
+            width: min(82%, 250px);
+            aspect-ratio: 1;
+            object-fit: contain;
+            filter: drop-shadow(0 0 34px rgba(255,255,255,0.3));
+            transform-origin: 50% 100%;
+            animation: petIdle 2.4s ease-in-out infinite;
+            z-index: 2;
+        }
+        .pet-img.power { animation: petPower 900ms ease both; }
+        .bar { height: 10px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); }
+        .fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--mint)); box-shadow: 0 0 18px rgba(92,255,177,0.55); transition: width 500ms ease; }
+        .food-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+        .food-btn {
+            min-height: 86px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            gap: 5px;
+            padding: 10px;
+        }
+        .food-emoji { font-size: 2rem; line-height: 1; filter: drop-shadow(0 0 16px rgba(255,255,255,0.35)); }
+        .food-count { font-size: 0.72rem; font-weight: 1000; color: #e2e8f0; }
+        .center { display: grid; gap: 16px; }
+        .timer-card {
+            min-height: 294px;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            gap: 16px;
+            background: radial-gradient(circle at center, rgba(56,232,255,0.14), transparent 17rem), var(--panel);
+        }
+        .timer { font-size: clamp(4.6rem, 11vw, 8.2rem); line-height: 0.9; font-weight: 1000; text-shadow: 0 0 40px rgba(56,232,255,0.25); }
+        .timer-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .quest, .note, .square-card {
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.07);
+            padding: 16px;
+        }
+        .quest { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center; }
+        .state { color: var(--mint); font-size: 0.7rem; font-weight: 1000; letter-spacing: 0.12em; text-transform: uppercase; }
+        .log { color: #cbd5e1; font-size: 0.88rem; line-height: 1.55; }
+        .adoption {
+            position: fixed;
+            inset: 0;
+            z-index: 160;
+            display: grid;
+            place-items: center;
+            padding: 18px;
+            background: radial-gradient(circle at center, rgba(56,232,255,0.18), transparent 30rem), rgba(3,7,18,0.94);
+            backdrop-filter: blur(20px);
+            overflow-y: auto;
+        }
+        .adoption.hidden { display: none; }
+        .adoption-card { width: min(1060px,100%); max-height: calc(100vh - 36px); overflow: auto; padding: clamp(18px,4vw,34px); }
+        .pet-picker { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 12px; margin: 22px 0; }
+        .pet-choice {
+            min-height: 162px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            display: grid;
+            place-items: center;
+            gap: 6px;
+            padding: 10px;
+        }
+        .pet-choice.selected { border-color: var(--mint); box-shadow: 0 0 32px rgba(92,255,177,0.24); }
+        .pet-choice img { width: 92px; height: 92px; object-fit: contain; }
+        .name-input {
+            width: min(420px,100%);
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.08);
+            color: var(--text);
+            border-radius: 18px;
+            padding: 1rem;
+            outline: 0;
+            font-weight: 800;
+        }
+        .tour-layer { position: fixed; inset: 0; z-index: 80; pointer-events: none; display: none; }
+        .tour-layer.active { display: block; }
+        .dim { position: absolute; inset: 0; background: rgba(0,0,0,0.62); }
+        .spotlight {
+            position: absolute;
+            border: 2px solid rgba(56,232,255,0.9);
+            border-radius: 24px;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.55), 0 0 34px rgba(56,232,255,0.9), inset 0 0 28px rgba(56,232,255,0.24);
+            transition: left 280ms ease, top 280ms ease, width 280ms ease, height 280ms ease;
+            animation: targetPulse 1.1s ease-in-out infinite;
+        }
+        .arrow {
+            position: absolute;
+            width: 48px; height: 48px;
+            transform: rotate(45deg);
+            border-right: 5px solid var(--amber);
+            border-bottom: 5px solid var(--amber);
+            filter: drop-shadow(0 0 14px rgba(251,191,36,0.8));
+            animation: arrowBounce 760ms ease-in-out infinite;
+        }
+        .bubble {
+            position: absolute;
+            width: min(370px, calc(100vw - 28px));
+            pointer-events: auto;
+            border-radius: 22px;
+            padding: 18px;
+            background: rgba(8,12,24,0.94);
+            border: 1px solid rgba(56,232,255,0.4);
+            box-shadow: 0 24px 90px rgba(0,0,0,0.5), 0 0 36px rgba(56,232,255,0.18);
+        }
+        .bubble h3 { color: var(--cyan); font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 0.65rem; }
+        .bubble p { color: #e5e7eb; line-height: 1.55; font-size: 0.95rem; margin-bottom: 1rem; }
+        .bubble-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+        .challenge, .reward {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: none;
+            place-items: center;
+            padding: 18px;
+            background: radial-gradient(circle at center, rgba(56,232,255,0.20), transparent 26rem), rgba(3,7,18,0.92);
+            backdrop-filter: blur(22px);
+        }
+        .challenge.active, .reward.active { display: grid; }
+        .challenge-card, .reward-card {
+            width: min(820px,100%);
+            background: rgba(8,12,24,0.92);
+            border: 1px solid rgba(56,232,255,0.28);
+            border-radius: 30px;
+            padding: clamp(18px,4vw,34px);
+            box-shadow: 0 0 90px rgba(56,232,255,0.22);
+            overflow: hidden;
+        }
+        .challenge-card.flip { animation: cardFlip 520ms ease both; }
+        .challenge-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .ring {
+            width: 92px; height: 92px; border-radius: 50%;
+            display: grid; place-items: center;
+            background: conic-gradient(var(--cyan) var(--timer-deg,360deg), rgba(255,255,255,0.08) 0deg);
+        }
+        .ring span { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; background: #08101f; font-weight: 1000; font-size: 1.25rem; }
+        .question { font-size: clamp(1.35rem,4.4vw,2.35rem); line-height: 1.15; font-weight: 1000; max-width: 680px; }
+        .answers { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; margin-top: 30px; }
+        .answer-btn {
+            min-height: 86px;
+            border-radius: 22px;
+            text-align: left;
+            text-transform: none;
+            letter-spacing: 0;
+            font-size: 1rem;
+            line-height: 1.35;
+            background: rgba(255,255,255,0.08);
+        }
+        .answer-btn.correct { background: rgba(16,185,129,0.34); border-color: rgba(92,255,177,0.8); box-shadow: 0 0 32px rgba(92,255,177,0.35); }
+        .answer-btn.wrong { background: rgba(244,63,94,0.28); border-color: rgba(251,113,133,0.8); animation: shake 320ms ease both; }
+        .feedback { min-height: 28px; margin-top: 16px; color: var(--amber); font-weight: 1000; letter-spacing: 0.08em; text-transform: uppercase; }
+        .reward-card { text-align: center; border-color: rgba(92,255,177,0.42); box-shadow: 0 0 90px rgba(92,255,177,0.22); }
+        .reward-card h2 { font-size: clamp(2.2rem,8vw,5rem); line-height: 0.95; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mint); text-shadow: 0 0 34px rgba(92,255,177,0.5); }
+        .reward-foods { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin: 26px 0; }
+        .reward-token {
+            min-width: 96px; min-height: 96px; border-radius: 28px;
+            display: grid; place-items: center;
+            background: linear-gradient(135deg, rgba(251,191,36,0.92), rgba(251,113,133,0.92));
+            color: #08101f; font-weight: 1000;
+            box-shadow: 0 0 38px rgba(251,191,36,0.42);
+            animation: rewardToken 900ms ease both;
+        }
+        .canvas { position: fixed; inset: 0; z-index: 140; pointer-events: none; }
+        .complete {
+            position: fixed; inset: 0; z-index: 95; display: none; place-items: center; pointer-events: none;
+        }
+        .complete.show { display: grid; }
+        .complete span {
+            padding: 1.2rem 2rem;
+            border-radius: 999px;
+            background: rgba(8,12,24,0.82);
+            border: 1px solid rgba(92,255,177,0.45);
+            box-shadow: 0 0 60px rgba(92,255,177,0.45);
+            color: var(--mint);
+            font-weight: 1000;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            animation: completePop 900ms ease both;
+        }
+        .shockwave {
+            position: fixed; width: 32px; height: 32px; border-radius: 50%;
+            border: 2px solid var(--mint); z-index: 135; pointer-events: none;
+            animation: shockwave 620ms ease-out both;
+        }
+        .shake { animation: shake 280ms ease both; }
+        @keyframes petIdle { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.012); } }
+        @keyframes petPower { 0% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); } 35% { transform: translateY(-30px) scale(1.1); filter: drop-shadow(0 0 58px rgba(92,255,177,0.88)); } 100% { transform: scale(1); filter: drop-shadow(0 0 34px rgba(255,255,255,0.3)); } }
+        @keyframes targetPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.018); } }
+        @keyframes arrowBounce { 0%,100% { transform: translateY(0) rotate(45deg); } 50% { transform: translateY(12px) rotate(45deg); } }
+        @keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
+        @keyframes cardFlip { 0% { transform: rotateY(0) scale(1); } 50% { transform: rotateY(9deg) scale(1.018); } 100% { transform: rotateY(0) scale(1); } }
+        @keyframes completePop { 0% { opacity: 0; transform: translateY(20px) scale(0.92); } 25% { opacity: 1; transform: translateY(0) scale(1.06); } 100% { opacity: 0; transform: translateY(-18px) scale(1); } }
+        @keyframes shockwave { from { opacity: 1; transform: translate(-50%,-50%) scale(0.4); } to { opacity: 0; transform: translate(-50%,-50%) scale(8); } }
+        @keyframes rewardToken { from { opacity: 0; transform: translateY(24px) scale(0.8) rotate(-12deg); } to { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); } }
+        @media (max-width: 1050px) {
+            .layout { grid-template-columns: 1fr; }
+            .pet-card { min-height: 360px; }
+            .pet-picker { grid-template-columns: repeat(3,minmax(0,1fr)); }
+        }
+        @media (max-width: 720px) {
+            .shell { padding: 10px; gap: 10px; }
+            .topbar { position: relative; top: 0; align-items: flex-start; flex-direction: column; border-radius: 18px; }
+            .actions, .timer-actions { width: 100%; justify-content: stretch; }
+            .actions button, .timer-actions button { flex: 1; }
+            .panel { padding: 14px; border-radius: 18px; }
+            .quest { grid-template-columns: 1fr; }
+            .pet-picker { grid-template-columns: repeat(2,minmax(0,1fr)); }
+            .answers { grid-template-columns: 1fr; }
+            .challenge-top { align-items: flex-start; flex-direction: column; }
+            .ring { width: 74px; height: 74px; }
+            .ring span { width: 58px; height: 58px; font-size: 1rem; }
+            .bubble { left: 14px !important; right: 14px; width: auto; max-height: min(52vh,360px); overflow: auto; }
+        }
+        @media (max-height: 760px) {
+            .pet-picker { margin: 14px 0; }
+            .pet-choice { min-height: 128px; }
+            .pet-choice img { width: 74px; height: 74px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="effectsCanvas" class="canvas"></canvas>
+
+    <section id="adoptionLayer" class="adoption">
+        <div class="glass adoption-card" data-tour="choosePet">
+            <p class="subtle">Start Here</p>
+            <h1>Choose Your Demo Pet</h1>
+            <p class="log" style="margin-top:10px">Pick a pet, name it, and begin a fast sandbox tour. The demo is all local and will not change real data.</p>
+            <div id="petPicker" class="pet-picker"></div>
+            <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center">
+                <input id="petNameInput" class="name-input" maxlength="14" value="Nova" aria-label="Pet name">
+                <button id="startDemoBtn" class="btn">Start Student Demo</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="shell">
+        <header class="topbar" data-tour="welcome">
+            <div class="brand">
+                <div class="mark">EP</div>
+                <div>
+                    <h1>EduPet Mythic Student Demo</h1>
+                    <p class="subtle">Sandbox guided tour</p>
+                </div>
+            </div>
+            <div class="actions">
+                <button id="openTeacherBtn" class="ghost" data-tour="openTeacher">Open Teacher Demo</button>
+                <button id="changePetBtn" class="ghost">Change Pet</button>
+                <button id="replayTourBtn" class="btn">Replay Tour</button>
+            </div>
+        </header>
+
+        <main class="layout">
+            <aside style="display:grid;gap:16px">
+                <section id="petCard" class="glass panel pet-card" data-tour="petStage">
+                    <div>
+                        <div class="title-row"><h2>Pet Link</h2><span id="stageBadge" class="badge">Egg</span></div>
+                        <div class="pet-line"><span id="petName" class="badge">Nova</span><span id="petKind" class="badge">Rabbit</span></div>
+                    </div>
+                    <div class="pet-stage"><img id="petImage" class="pet-img" src="assets/pets/rabbit-egg.png" alt="Selected demo pet"></div>
+                    <div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span class="subtle">Evolution XP</span><span id="xpText" class="subtle">0%</span></div>
+                        <div class="bar"><div id="xpFill" class="fill"></div></div>
+                    </div>
+                </section>
+                <section class="glass panel" data-tour="feedPet">
+                    <div class="title-row"><h3>Food Inventory</h3><span class="subtle">Fast evolution</span></div>
+                    <div class="food-grid">
+                        <button class="food-btn" data-food="cookie"><span class="food-emoji">🍪</span><span>Cookie</span><span id="cookieCount" class="food-count">2</span></button>
+                        <button class="food-btn" data-food="candy"><span class="food-emoji">🍬</span><span>Candy</span><span id="candyCount" class="food-count">1</span></button>
+                        <button class="food-btn" data-food="apple"><span class="food-emoji">🍎</span><span>Apple</span><span id="appleCount" class="food-count">1</span></button>
+                    </div>
+                </section>
+            </aside>
+
+            <section class="center">
+                <section class="glass panel timer-card" data-tour="challenge">
+                    <p class="subtle">Focus Console</p>
+                    <div id="mainTimer" class="timer">01:00</div>
+                    <div class="timer-actions">
+                        <button id="challengeBtn" class="btn">1 Min Challenge</button>
+                        <button class="ghost" disabled>25 Min</button>
+                        <button class="ghost" disabled>45 Min</button>
+                    </div>
+                </section>
+                <section class="glass panel" data-tour="questUpload">
+                    <div class="title-row"><h3>Skill Directives</h3><span id="questStatus" class="state">Open</span></div>
+                    <article class="quest">
+                        <div>
+                            <p class="subtle">Quest</p>
+                            <h3 id="questTitle">Read Chapter 3 and upload a short reflection about the main character.</h3>
+                            <p id="questMeta" class="log">Reward: Apple x 3</p>
+                        </div>
+                        <button id="uploadQuestBtn" class="btn">Upload Work</button>
+                    </article>
+                </section>
+            </section>
+
+            <aside style="display:grid;gap:16px">
+                <section class="glass panel" data-tour="teacherNote">
+                    <div class="title-row"><h3>Teacher's Note</h3><span class="subtle">Private feedback</span></div>
+                    <div id="teacherNote" class="note log">Awaiting teacher guidance...</div>
+                </section>
+                <section class="glass panel" data-tour="square">
+                    <div class="title-row"><h3>Resonance Square</h3><span class="subtle">Class feed</span></div>
+                    <article class="square-card">
+                        <p class="subtle">Teacher</p>
+                        <h3 id="squareText">Small steps make strong readers.</h3>
+                        <p id="likeLine" class="log">2 likes</p>
+                        <div style="height:12px"></div>
+                        <button id="likeBtn" class="ghost">Like</button>
+                        <button id="commentBtn" class="ghost">Add Comment</button>
+                        <div id="commentList" style="display:grid;gap:8px;margin-top:12px"></div>
+                    </article>
+                </section>
+                <section class="glass panel" data-tour="finish">
+                    <div class="title-row"><h3>Demo Progress</h3><span id="tourProgress" class="subtle">Step 1 / 15</span></div>
+                    <p id="demoLog" class="log">Choose a pet to begin the student tour.</p>
+                </section>
+            </aside>
+        </main>
+    </div>
+
+    <div id="tourLayer" class="tour-layer">
+        <div class="dim"></div>
+        <div id="spotlight" class="spotlight"></div>
+        <div id="guideArrow" class="arrow"></div>
+        <div id="guideBubble" class="bubble">
+            <h3 id="guideStep">Step 1 / 15</h3>
+            <p id="guideText">Welcome to the student demo.</p>
+            <div class="bubble-actions">
+                <button id="skipTourBtn" class="ghost">Skip Tour</button>
+                <button id="nextTourBtn" class="btn">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="challengeLayer" class="challenge">
+        <section id="challengeCard" class="challenge-card">
+            <div class="challenge-top">
+                <div>
+                    <p class="subtle">Quick Focus Mission</p>
+                    <h2 id="questionText" class="question">Question text</h2>
+                </div>
+                <div id="timerRing" class="ring"><span id="challengeTime">60</span></div>
+            </div>
+            <div id="answerGrid" class="answers"></div>
+            <div id="challengeFeedback" class="feedback"></div>
+        </section>
+    </div>
+
+    <div id="rewardLayer" class="reward">
+        <section class="reward-card">
+            <h2>Reward Acquired</h2>
+            <p id="rewardSummary" class="log">Your food rewards are ready.</p>
+            <div id="rewardFoods" class="reward-foods"></div>
+            <button id="closeRewardBtn" class="btn">Collect Rewards</button>
+        </section>
+    </div>
+    <div id="stageComplete" class="complete"><span>Mission Complete</span></div>
+
+    <script>
+        const STORAGE_KEY = "edupet_demo_state_v1";
+        const HANDOFF_KEY = "edupet_demo_handoff_v1";
+        const pets = ["cat", "rabbit", "monkey", "dino", "parrot", "goldfish"];
+        const stageKeys = ["egg", "hatchling", "growing", "mature", "final"];
+        const stageNames = ["Egg", "Hatchling", "Growing", "Mature", "Final"];
+        const foodIcons = { cookie: "🍪", candy: "🍬", apple: "🍎" };
+        const quizBank = [
+            { q: "What has hands but cannot clap?", a: ["A clock", "A frog", "A chair", "A cloud"], correct: 0 },
+            { q: "What has a face and two hands but no arms or legs?", a: ["A clock", "A book", "A shoe", "A cup"], correct: 0 },
+            { q: "What gets wetter as it dries?", a: ["A towel", "A pencil", "A candle", "A window"], correct: 0 },
+            { q: "What has keys but cannot open doors?", a: ["A piano", "A map", "A tree", "A spoon"], correct: 0 },
+            { q: "What can you catch but not throw?", a: ["A cold", "A ball", "A kite", "A coin"], correct: 0 },
+            { q: "What has many teeth but cannot bite?", a: ["A comb", "A tiger", "A zipper", "A fork"], correct: 0 },
+            { q: "What has one eye but cannot see?", a: ["A needle", "A bird", "A camera", "A potato"], correct: 0 },
+            { q: "What goes up but never comes down?", a: ["Your age", "A balloon", "A rocket", "A bird"], correct: 0 },
+            { q: "What has a neck but no head?", a: ["A bottle", "A horse", "A shirt", "A lamp"], correct: 0 },
+            { q: "What has a bed but never sleeps?", a: ["A river", "A dog", "A baby", "A pillow"], correct: 0 },
+            { q: "What has a bank but no money?", a: ["A river", "A wallet", "A school", "A store"], correct: 0 },
+            { q: "What has words but never speaks?", a: ["A book", "A radio", "A teacher", "A phone"], correct: 0 },
+            { q: "What has legs but cannot walk?", a: ["A table", "A cat", "A robot", "A child"], correct: 0 },
+            { q: "What has an ear but cannot hear?", a: ["Corn", "A rabbit", "A phone", "A drum"], correct: 0 },
+            { q: "What comes down but never goes up?", a: ["Rain", "Smoke", "A kite", "A bird"], correct: 0 },
+            { q: "What has four wheels and flies?", a: ["A garbage truck", "A race car", "A bus", "A wagon"], correct: 0 },
+            { q: "What room has no doors or windows?", a: ["A mushroom", "A classroom", "A bedroom", "A kitchen"], correct: 0 },
+            { q: "What begins with T, ends with T, and has T inside?", a: ["A teapot", "A tent", "A ticket", "A tablet"], correct: 0 },
+            { q: "What is full of holes but still holds water?", a: ["A sponge", "A basket", "A net", "A sock"], correct: 0 },
+            { q: "What has a tail and a head but no body?", a: ["A coin", "A snake", "A fish", "A dog"], correct: 0 },
+            { q: "What can travel around the world while staying in a corner?", a: ["A stamp", "A plane", "A boat", "A backpack"], correct: 0 },
+            { q: "What is always in front of you but cannot be seen?", a: ["The future", "A mirror", "A wall", "A cloud"], correct: 0 },
+            { q: "What becomes smaller every time it takes a bath?", a: ["Soap", "A duck", "A towel", "A stone"], correct: 0 },
+            { q: "What has cities but no houses?", a: ["A map", "A street", "A country", "A school"], correct: 0 },
+            { q: "What has lakes but no water?", a: ["A map", "A cup", "A boat", "A beach"], correct: 0 },
+            { q: "What has a head, a tail, and is brown?", a: ["A penny", "A puppy", "A worm", "A horse"], correct: 0 },
+            { q: "What has a tongue but cannot taste?", a: ["A shoe", "A dog", "A bell", "A spoon"], correct: 0 },
+            { q: "What can fill a room but takes up no space?", a: ["Light", "A chair", "Water", "A box"], correct: 0 },
+            { q: "What has branches but no leaves?", a: ["A bank", "A tree", "A flower", "A bush"], correct: 0 },
+            { q: "What is orange, green, and sounds like a parrot?", a: ["A carrot", "A pumpkin", "A melon", "A pepper"], correct: 0 }
+        ];
+        const flowSteps = [
+            { page: "student", target: "[data-tour='petStage']", title: "Step 1 / 15", text: "Meet your chosen pet. This demo uses the same five evolution forms as the main site." },
+            { page: "student", target: "[data-tour='challenge']", title: "Step 2 / 15", text: "Tap 1 Min Challenge to earn food with quick English brain teasers." },
+            { page: "student", target: "[data-tour='feedPet']", title: "Step 3 / 15", text: "Feed four foods to unlock Hatchling, Growing, Mature, and Final forms quickly." },
+            { page: "student", target: "[data-tour='openTeacher']", title: "Step 4 / 15", text: "Open the Teacher Demo. The teacher will publish a quest in a separate page." },
+            { page: "teacher", target: "[data-tour='publish']", title: "Step 5 / 15", text: "Publish a quest for the student." },
+            { page: "teacher", target: "[data-tour='openStudent']", title: "Step 6 / 15", text: "Return to the Student Demo so the student can view and submit the quest." },
+            { page: "student", target: "[data-tour='questUpload']", title: "Step 7 / 15", text: "The new quest is visible. Tap Upload Work to submit instantly with no document needed." },
+            { page: "student", target: "[data-tour='openTeacher']", title: "Step 8 / 15", text: "Open the Teacher Demo again so the teacher can review the submission." },
+            { page: "teacher", target: "[data-tour='review']", title: "Step 9 / 15", text: "Approve the student's work and send review feedback." },
+            { page: "teacher", target: "[data-tour='privateNote']", title: "Step 10 / 15", text: "Send a private note that will appear on the student page." },
+            { page: "teacher", target: "[data-tour='square']", title: "Step 11 / 15", text: "Post an encouraging class message to the Resonance Square." },
+            { page: "teacher", target: "[data-tour='openStudent']", title: "Step 12 / 15", text: "Return to the Student Demo to see the approved quest, private note, and square update." },
+            { page: "student", target: "[data-tour='teacherNote']", title: "Step 13 / 15", text: "The teacher feedback and private note are now visible here." },
+            { page: "student", target: "[data-tour='square']", title: "Step 14 / 15", text: "Like or comment on the square post to complete the social loop." },
+            { page: "student", target: "[data-tour='finish']", title: "Step 15 / 15", text: "Full cross-page tour complete. You experienced both student and teacher workflows." }
+        ];
+        const $ = (selector) => document.querySelector(selector);
+        let state = shouldContinueDemo("student") ? loadState() : resetDemoState();
+        let challenge = { active: false, time: 60, score: 0, index: 0, order: [], timer: null };
+
+        function defaultState() {
+            return {
+                adopted: false,
+                pet: "rabbit",
+                petName: "Nova",
+                feedCount: 0,
+                inventory: { cookie: 2, candy: 1, apple: 1 },
+                questTitle: "Waiting for the teacher to publish a quest.",
+                questStatus: "Not Published",
+                submitted: false,
+                approved: false,
+                teacherNote: "Awaiting teacher guidance...",
+                squareText: "Small steps make strong readers.",
+                likes: 2,
+                comments: [],
+                flowStep: 0
+            };
+        }
+        function loadState() {
+            try { return { ...defaultState(), ...(JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}) }; }
+            catch { return defaultState(); }
+        }
+        function resetDemoState() {
+            const fresh = defaultState();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
+            return fresh;
+        }
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+        function shouldContinueDemo(page) {
+            const urlHandoff = new URLSearchParams(location.search).has("handoff");
+            if (urlHandoff) {
+                localStorage.removeItem(HANDOFF_KEY);
+                history.replaceState(null, "", location.pathname);
+                return true;
+            }
+            try {
+                const handoff = JSON.parse(localStorage.getItem(HANDOFF_KEY) || "null");
+                localStorage.removeItem(HANDOFF_KEY);
+                return handoff?.page === page && Date.now() - Number(handoff.at || 0) < 12000;
+            } catch {
+                localStorage.removeItem(HANDOFF_KEY);
+                return false;
+            }
+        }
+        function passDemoTo(page) {
+            localStorage.setItem(HANDOFF_KEY, JSON.stringify({ page, at: Date.now() }));
+        }
+        function stageIndex() {
+            return Math.min(stageKeys.length - 1, Math.max(0, state.feedCount));
+        }
+        function petSrc(pet = state.pet, index = stageIndex()) {
+            return `assets/pets/${pet}-${stageKeys[index]}.png`;
+        }
+        function renderPetPicker() {
+            $("#petPicker").innerHTML = pets.map((pet) => `
+                <button class="pet-choice ${pet === state.pet ? "selected" : ""}" data-pet="${pet}">
+                    <img src="${petSrc(pet, 0)}" alt="${pet} egg">
+                    <strong>${pet.toUpperCase()}</strong>
+                </button>
+            `).join("");
+        }
+        function render() {
+            const index = stageIndex();
+            $("#adoptionLayer").classList.toggle("hidden", state.adopted);
+            document.documentElement.style.setProperty("--pet-bg", `url("assets/pet-backgrounds/${state.pet}-base.png")`);
+            $("#petName").textContent = state.petName;
+            $("#petKind").textContent = state.pet;
+            $("#stageBadge").textContent = stageNames[index];
+            $("#petImage").src = petSrc();
+            const progress = Math.round(index / (stageKeys.length - 1) * 100);
+            $("#xpText").textContent = `${progress}%`;
+            $("#xpFill").style.width = `${progress}%`;
+            $("#cookieCount").textContent = state.inventory.cookie;
+            $("#candyCount").textContent = state.inventory.candy;
+            $("#appleCount").textContent = state.inventory.apple;
+            $("#questTitle").textContent = state.questTitle;
+            $("#questStatus").textContent = state.questStatus;
+            $("#questMeta").textContent = state.submitted ? "Submitted instantly: no document required" : (state.questStatus === "Not Published" ? "The next quest will appear here." : "Reward: Apple x 3");
+            $("#uploadQuestBtn").disabled = state.questStatus === "Not Published";
+            $("#teacherNote").textContent = state.teacherNote;
+            $("#squareText").textContent = state.squareText;
+            $("#likeLine").textContent = `${state.likes} likes${state.comments.length ? `, ${state.comments.length} comment` : ""}`;
+            $("#commentList").innerHTML = state.comments.map((text) => `<p class="log">${text}</p>`).join("");
+            const guide = currentGuideStep();
+            $("#tourProgress").textContent = guide.title;
+        }
+        function startDemo() {
+            const selectedPet = state.pet;
+            const selectedName = ($("#petNameInput").value || "Nova").trim().slice(0, 14) || "Nova";
+            state = defaultState();
+            state.pet = selectedPet;
+            state.petName = selectedName;
+            state.adopted = true;
+            saveState();
+            render();
+            $("#tourLayer").classList.add("active");
+            updateGuide();
+            complete("Pet Linked");
+        }
+        function currentGuideStep() {
+            const index = Math.min(Math.max(Number(state.flowStep || 0), 0), flowSteps.length - 1);
+            const current = flowSteps[index];
+            if (current.page === "student") return current;
+            return {
+                target: "[data-tour='openTeacher']",
+                title: current.title,
+                text: `Continue in the Teacher Demo: ${current.text}`
+            };
+        }
+        function advanceFlow(expected, next) {
+            if (Number(state.flowStep || 0) === expected) {
+                state.flowStep = next;
+                saveState();
+                render();
+                updateGuide();
+                return true;
+            }
+            return false;
+        }
+        function updateGuide() {
+            const layer = $("#tourLayer");
+            if (!layer.classList.contains("active")) return;
+            const current = currentGuideStep();
+            const target = document.querySelector(current.target);
+            if (!target) return;
+            let rect = target.getBoundingClientRect();
+            if (rect.top < 86 || rect.bottom > innerHeight - 86) {
+                target.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
+                rect = target.getBoundingClientRect();
+            }
+            const pad = 10;
+            const left = Math.max(8, rect.left - pad);
+            const top = Math.max(8, rect.top - pad);
+            const width = Math.min(innerWidth - left - 8, rect.width + pad * 2);
+            const height = Math.min(innerHeight - top - 8, rect.height + pad * 2);
+            $("#spotlight").style.cssText = `left:${left}px;top:${top}px;width:${width}px;height:${height}px`;
+            $("#guideArrow").style.left = `${Math.min(innerWidth - 70, left + width / 2 - 24)}px`;
+            $("#guideArrow").style.top = `${Math.min(innerHeight - 70, top + height + 10)}px`;
+            const bubbleTop = top + height + 72 + 230 < innerHeight ? top + height + 72 : Math.max(12, top - 248);
+            const bubbleLeft = left + width + 22 + 370 < innerWidth ? left + width + 22 : Math.max(14, Math.min(innerWidth - 384, left));
+            $("#guideBubble").style.left = `${bubbleLeft}px`;
+            $("#guideBubble").style.top = `${bubbleTop}px`;
+            $("#guideStep").textContent = current.title;
+            $("#guideText").textContent = current.text;
+            $("#tourProgress").textContent = current.title;
+        }
+        function nextTour() {
+            const guide = currentGuideStep();
+            if (guide.target === "[data-tour='openTeacher']" && flowSteps[state.flowStep]?.page === "teacher") {
+                openTeacher();
+                return;
+            }
+            if (state.flowStep < flowSteps.length - 1) {
+                state.flowStep += 1;
+                saveState();
+                complete();
+                render();
+                updateGuide();
+            } else {
+                $("#tourLayer").classList.remove("active");
+                complete("Tour Complete");
+            }
+        }
+        function requireStep(name) {
+            const active = $("#tourLayer").classList.contains("active");
+            if (!active || currentGuideStep().target.includes(name)) return true;
+            $("#guideBubble").classList.remove("shake");
+            void $("#guideBubble").offsetWidth;
+            $("#guideBubble").classList.add("shake");
+            return false;
+        }
+        function shuffle(list) {
+            return [...list].sort(() => Math.random() - 0.5);
+        }
+        function startChallenge() {
+            if (!requireStep("challenge")) return;
+            challenge = { active: true, time: 60, score: 0, index: 0, order: shuffle(quizBank.map((_, i) => i)), timer: null };
+            $("#challengeLayer").classList.add("active");
+            renderQuestion();
+            tickChallenge();
+            challenge.timer = setInterval(() => {
+                challenge.time -= 1;
+                tickChallenge();
+                if (challenge.time <= 0) finishChallenge();
+            }, 1000);
+        }
+        function tickChallenge() {
+            $("#challengeTime").textContent = challenge.time;
+            $("#timerRing").style.setProperty("--timer-deg", `${Math.max(0, challenge.time / 60 * 360)}deg`);
+            $("#mainTimer").textContent = `00:${String(Math.max(0, challenge.time)).padStart(2, "0")}`;
+        }
+        function renderQuestion() {
+            const q = quizBank[challenge.order[challenge.index] % quizBank.length];
+            $("#questionText").textContent = q.q;
+            $("#challengeFeedback").textContent = "";
+            const mixed = shuffle(q.a.map((text, originalIndex) => ({ text, originalIndex })));
+            $("#answerGrid").innerHTML = mixed.map((item) => `<button class="answer-btn" data-correct="${item.originalIndex === q.correct ? "yes" : "no"}">${item.text}</button>`).join("");
+        }
+        function answerQuestion(button) {
+            if (button.dataset.correct !== "yes") {
+                button.classList.add("wrong");
+                $("#challengeFeedback").textContent = "Try again!";
+                tone("bad");
+                setTimeout(() => button.classList.remove("wrong"), 420);
+                return;
+            }
+            button.classList.add("correct");
+            challenge.score += 1;
+            $("#challengeFeedback").textContent = "+1 Correct";
+            tone("good");
+            burst(button, "good");
+            $("#challengeCard").classList.remove("flip");
+            void $("#challengeCard").offsetWidth;
+            $("#challengeCard").classList.add("flip");
+            setTimeout(() => {
+                if (challenge.index >= challenge.order.length - 1) {
+                    finishChallenge();
+                    return;
+                }
+                challenge.index += 1;
+                renderQuestion();
+            }, 520);
+        }
+        function finishChallenge() {
+            if (!challenge.active) return;
+            clearInterval(challenge.timer);
+            challenge.active = false;
+            $("#challengeLayer").classList.remove("active");
+            $("#mainTimer").textContent = "01:00";
+            const earned = {
+                cookie: Math.max(1, Math.floor(challenge.score / 4) + 1),
+                candy: Math.max(1, Math.floor(challenge.score / 6)),
+                apple: Math.max(1, Math.floor(challenge.score / 8))
+            };
+            Object.entries(earned).forEach(([key, value]) => state.inventory[key] += value);
+            saveState();
+            render();
+            $("#rewardSummary").textContent = `You solved ${challenge.score} question${challenge.score === 1 ? "" : "s"} and earned food rewards.`;
+            $("#rewardFoods").innerHTML = Object.entries(earned).map(([key, value]) => `<div class="reward-token"><span style="font-size:2rem">${foodIcons[key]}</span><span>${key.toUpperCase()} x ${value}</span></div>`).join("");
+            $("#rewardLayer").classList.add("active");
+            tone("reward");
+            particles(innerWidth / 2, innerHeight / 2, "good", innerWidth < 720 ? 90 : 180);
+            advanceFlow(1, 2);
+        }
+        function collectRewards() {
+            $("#rewardLayer").classList.remove("active");
+            powerPet();
+        }
+        function feedPet(food) {
+            if (state.inventory[food] <= 0) return;
+            state.inventory[food] -= 1;
+            const before = stageIndex();
+            state.feedCount += 1;
+            const after = stageIndex();
+            saveState();
+            render();
+            powerPet();
+            particles(innerWidth * 0.24, innerHeight * 0.44, "good", 80);
+            tone(after > before ? "reward" : "good");
+            complete(after > before ? "Evolution Unlocked" : "Pet Powered Up");
+            if (state.feedCount >= stageKeys.length - 1) advanceFlow(2, 3);
+        }
+        function uploadQuest() {
+            if (!requireStep("questUpload")) return;
+            state.submitted = true;
+            state.questStatus = "Waiting Approval";
+            saveState();
+            render();
+            complete("Work Uploaded");
+            tone("good");
+            advanceFlow(6, 7);
+        }
+        function openTeacher() {
+            const current = Number(state.flowStep || 0);
+            if (!requireStep("openTeacher")) return;
+            if (current === 3) state.flowStep = 4;
+            if (current === 7) state.flowStep = 8;
+            saveState();
+            passDemoTo("teacher");
+            window.open(`Demo Teacher Tour.html?handoff=${Date.now()}`, "_blank");
+            render();
+            updateGuide();
+        }
+        function likeSquare() {
+            state.likes += 1;
+            saveState();
+            render();
+            burst($("#likeBtn"), "good");
+            complete("Like Added");
+        }
+        function commentSquare() {
+            state.comments.push(`${state.petName}: This helped me stay focused.`);
+            saveState();
+            render();
+            complete("Comment Posted");
+            advanceFlow(13, 14);
+        }
+        function powerPet() {
+            $("#petImage").classList.add("power");
+            setTimeout(() => $("#petImage").classList.remove("power"), 950);
+        }
+        function complete(text = "Mission Complete") {
+            $("#stageComplete span").textContent = text;
+            $("#stageComplete").classList.add("show");
+            setTimeout(() => $("#stageComplete").classList.remove("show"), 920);
+        }
+        function tone(type) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioContext();
+                const gain = ctx.createGain();
+                gain.connect(ctx.destination);
+                gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.16, ctx.currentTime + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.42);
+                const notes = type === "bad" ? [160,120] : type === "reward" ? [660,990,1320] : [520,780];
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    osc.type = "triangle";
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.08);
+                    osc.connect(gain);
+                    osc.start(ctx.currentTime + i * 0.08);
+                    osc.stop(ctx.currentTime + 0.38 + i * 0.08);
+                });
+            } catch {}
+        }
+        const canvas = $("#effectsCanvas");
+        const ctx = canvas.getContext("2d");
+        const dots = [];
+        function resizeCanvas() {
+            canvas.width = innerWidth * devicePixelRatio;
+            canvas.height = innerHeight * devicePixelRatio;
+            canvas.style.width = `${innerWidth}px`;
+            canvas.style.height = `${innerHeight}px`;
+            ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+        }
+        function particles(x, y, mode = "good", amount = 52) {
+            const colors = mode === "bad" ? ["#fb7185","#f43f5e","#fecdd3"] : ["#5cffb1","#38e8ff","#fbbf24","#c4b5fd"];
+            for (let i = 0; i < amount; i++) {
+                dots.push({ x, y, vx:(Math.random()-0.5)*9, vy:(Math.random()-0.5)*9-2, life:42+Math.random()*28, size:2+Math.random()*5, color:colors[Math.floor(Math.random()*colors.length)] });
+            }
+        }
+        function burst(button, mode) {
+            const rect = button.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            particles(x, y, mode, 54);
+            const wave = document.createElement("div");
+            wave.className = "shockwave";
+            wave.style.left = `${x}px`;
+            wave.style.top = `${y}px`;
+            document.body.appendChild(wave);
+            setTimeout(() => wave.remove(), 650);
+        }
+        function drawParticles() {
+            ctx.clearRect(0,0,innerWidth,innerHeight);
+            for (let i = dots.length - 1; i >= 0; i--) {
+                const p = dots[i];
+                p.life -= 1; p.x += p.vx; p.y += p.vy; p.vy += 0.12;
+                ctx.globalAlpha = Math.max(0, p.life / 70);
+                ctx.fillStyle = p.color;
+                ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();
+                if (p.life <= 0) dots.splice(i,1);
+            }
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(drawParticles);
+        }
+        function bind() {
+            $("#petPicker").addEventListener("click", (event) => {
+                const card = event.target.closest(".pet-choice");
+                if (!card) return;
+                state.pet = card.dataset.pet;
+                renderPetPicker();
+            });
+            $("#startDemoBtn").addEventListener("click", startDemo);
+            $("#changePetBtn").addEventListener("click", () => { state.adopted = false; saveState(); render(); renderPetPicker(); });
+            $("#replayTourBtn").addEventListener("click", () => { state.flowStep = 0; saveState(); render(); $("#tourLayer").classList.add("active"); updateGuide(); });
+            $("#nextTourBtn").addEventListener("click", nextTour);
+            $("#skipTourBtn").addEventListener("click", () => $("#tourLayer").classList.remove("active"));
+            $("#challengeBtn").addEventListener("click", startChallenge);
+            $("#closeRewardBtn").addEventListener("click", collectRewards);
+            $("#uploadQuestBtn").addEventListener("click", uploadQuest);
+            $("#openTeacherBtn").addEventListener("click", openTeacher);
+            $("#likeBtn").addEventListener("click", likeSquare);
+            $("#commentBtn").addEventListener("click", commentSquare);
+            document.querySelectorAll(".food-btn").forEach((btn) => btn.addEventListener("click", () => feedPet(btn.dataset.food)));
+            $("#answerGrid").addEventListener("click", (event) => {
+                const btn = event.target.closest(".answer-btn");
+                if (btn) answerQuestion(btn);
+            });
+            window.addEventListener("storage", (event) => {
+                if (event.key === STORAGE_KEY) { state = loadState(); render(); updateGuide(); }
+            });
+            window.addEventListener("focus", () => { state = loadState(); render(); updateGuide(); });
+            window.addEventListener("resize", updateGuide);
+            window.addEventListener("scroll", updateGuide, { passive: true });
+        }
+        resizeCanvas();
+        drawParticles();
+        renderPetPicker();
+        bind();
+        render();
+        if (state.adopted) { $("#tourLayer").classList.add("active"); updateGuide(); }
+    </script>
+</body>
+</html>
